@@ -11,6 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
+    private final TestMemberRepository testMemberRepository;
+
+    public TestController(TestMemberRepository testMemberRepository) {
+    this.testMemberRepository = testMemberRepository;
+    }
+
     @GetMapping("/api/hello")
     public Map<String, String> hello() {
 
@@ -33,5 +39,10 @@ public class TestController {
         response.put("email", request.get("email"));
 
         return response;
+    }
+
+    @PostMapping("/api/test-member")
+    public TestMember saveMember(@RequestBody TestMember member) {
+        return testMemberRepository.save(member);
     }
 }
