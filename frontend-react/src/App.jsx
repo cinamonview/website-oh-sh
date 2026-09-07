@@ -1,19 +1,38 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 function App() {
-  const [message, setMessage] = useState('로딩 중...')
+  const [result, setResult] = useState('')
 
-  useEffect(() => {
-    fetch('http://localhost:8080/api/hello')
-      .then((res) => res.text())
-      .then((data) => setMessage(data))
-      .catch((err) => setMessage('에러 발생: ' + err.message))
-  }, [])
+  const sendData = () => {
+    fetch('http://localhost:8080/api/test', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: '홍길동',
+        email: 'test@test.com',
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data)
+        setResult(data.message)
+      })
+      .catch((err) => {
+        setResult('에러 발생: ' + err.message)
+      })
+  }
 
   return (
     <div>
-      <h1>서버 응답:</h1>
-      <p>{message}</p>
+      <h1>React → Spring Boot POST 테스트</h1>
+
+      <button onClick={sendData}>
+        데이터 보내기
+      </button>
+
+      <p>{result}</p>
     </div>
   )
 }
