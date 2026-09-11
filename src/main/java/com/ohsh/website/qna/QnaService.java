@@ -1,0 +1,46 @@
+package com.ohsh.website.qna;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class QnaService {
+
+    private final QnaRepository qnaRepository;
+
+    public QnaService(QnaRepository qnaRepository) {
+        this.qnaRepository = qnaRepository;
+    }
+
+    public Qna save(Qna qna) {
+        return qnaRepository.save(qna);
+    }
+
+    public Optional<Qna> findById(Long id) {
+        return qnaRepository.findById(id);
+    }
+
+    public List<Qna> findAll() {
+        return qnaRepository.findAll();
+    }
+
+    public Optional<Qna> update(Long id, String title, String content) {
+        return qnaRepository.findById(id)
+                .map(qna -> {
+                    qna.setTitle(title);
+                    qna.setContent(content);
+                    return qnaRepository.save(qna);
+                });
+    }
+
+    public boolean delete(Long id) {
+        return qnaRepository.findById(id)
+                .map(qna -> {
+                    qnaRepository.delete(qna);
+                    return true;
+                })
+                .orElse(false);
+    }
+}
