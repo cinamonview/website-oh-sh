@@ -40,3 +40,16 @@ out/
 node_modules/
 dist/
 dist-ssr/
+
+
+### Runtime / Local Test Files ###
+*.log
+cookie.txt
+downloaded-test.txt
+test.txt
+
+### Local Uploaded Files ###
+uploads/
+
+### Spring Boot Generated Static Files ###
+src/main/resources/static/

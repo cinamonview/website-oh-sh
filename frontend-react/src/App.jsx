@@ -7,6 +7,10 @@ import Board from './pages/Board.jsx'
 import BoardDetail from './pages/BoardDetail.jsx'
 import BoardWrite from './pages/BoardWrite.jsx'
 import BoardEdit from './pages/BoardEdit.jsx'
+import Archive from './pages/Archive.jsx'
+import ArchiveDetail from './pages/ArchiveDetail.jsx'
+import ArchiveWrite from './pages/ArchiveWrite.jsx'
+import ArchiveEdit from './pages/ArchiveEdit.jsx'
 import Qna from './pages/board/Qna.jsx'
 import QnaDetail from './pages/board/QnaDetail.jsx'
 import QnaWrite from './pages/board/QnaWrite.jsx'
@@ -86,6 +90,7 @@ function App() {
       <nav style={{ padding: '10px 20px', borderBottom: '1px solid #ddd', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '15px' }}>
         <Link to="/">홈 (DB 저장 테스트)</Link>
         <Link to="/board">자유게시판</Link>
+        <Link to="/archive">자료실</Link>
         <Link to="/qna">Q&A 게시판</Link>
         {loginId ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: 'auto' }}>
@@ -110,6 +115,10 @@ function App() {
           <Route path="/board/write" element={<BoardWrite />} />
           <Route path="/board/:id/edit" element={<BoardEdit />} />
           <Route path="/board/:id" element={<BoardDetail />} />
+          <Route path="/archive" element={<Archive />} />
+          <Route path="/archive/write" element={<ArchiveWrite />} />
+          <Route path="/archive/:id/edit" element={<ArchiveEdit />} />
+          <Route path="/archive/:id" element={<ArchiveDetail />} />
           <Route path="/qna" element={<Qna />} />
           <Route path="/qna/write" element={<QnaWrite />} />
           <Route path="/qna/:id/edit" element={<QnaEdit />} />

@@ -1,24 +1,90 @@
 package com.ohsh.website.archive;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Map;
+import java.util.UUID;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class ArchiveController {
 
     private final ArchiveService archiveService;
+    private final ArchiveFileService archiveFileService;
 
-    public ArchiveController(ArchiveService archiveService) {
+    public ArchiveController(ArchiveService archiveService, ArchiveFileService archiveFileService) {
         this.archiveService = archiveService;
+        this.archiveFileService = archiveFileService;
+    }
+
+    @PostMapping(value = "/api/archives/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> upload(
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "archiveId", required = false) Long archiveId) {
+        if (archiveId == null || archiveService.findById(archiveId).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (file == null || file.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "업로드할 파일이 없습니다."));
+        }
+
+        String originalFileName = file.getOriginalFilename();
+        String fileExtension = "";
+        if (originalFileName != null) {
+            String fileName = Paths.get(originalFileName).getFileName().toString();
+            int extensionIndex = fileName.lastIndexOf('.');
+            if (extensionIndex > 0) {
+                fileExtension = fileName.substring(extensionIndex);
+            }
+        }
+
+        String savedFileName = UUID.randomUUID() + fileExtension;
+        Path uploadDirectory = Paths.get("uploads", "archive").toAbsolutePath().normalize();
+        Path savedFilePath = uploadDirectory.resolve(savedFileName).normalize();
+
+        try {
+            Files.createDirectories(uploadDirectory);
+            Files.copy(file.getInputStream(), savedFilePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException exception) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "파일을 저장하지 못했습니다."));
+        }
+
+        ArchiveFile archiveFile = new ArchiveFile();
+        archiveFile.setArchiveId(archiveId);
+        archiveFile.setOriginalFileName(originalFileName == null ? "" : originalFileName);
+        archiveFile.setSavedFileName(savedFileName);
+        archiveFile.setFileSize(file.getSize());
+        archiveFileService.save(archiveFile);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+            "archiveId", archiveId,
+                "originalFileName", originalFileName == null ? "" : originalFileName,
+                "savedFileName", savedFileName,
+                "fileSize", file.getSize(),
+                "downloadPath", Paths.get("uploads", "archive", savedFileName).toString()));
     }
 
     @PostMapping("/api/archives")
@@ -30,6 +96,57 @@ public class ArchiveController {
     @GetMapping("/api/archives")
     public List<Archive> findAll() {
         return archiveService.findAll();
+    }
+
+    @GetMapping("/api/archives/{archiveId}/files")
+    public ResponseEntity<List<ArchiveFile>> findFiles(@PathVariable Long archiveId) {
+        if (archiveService.findById(archiveId).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(archiveFileService.findByArchiveId(archiveId));
+    }
+
+    @GetMapping("/api/archives/files/{fileId}/download")
+    public ResponseEntity<Resource> download(@PathVariable Long fileId) {
+        ArchiveFile archiveFile = archiveFileService.findById(fileId).orElse(null);
+        if (archiveFile == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Path uploadDirectory = Paths.get("uploads", "archive").toAbsolutePath().normalize();
+        Path savedFilePath = uploadDirectory.resolve(archiveFile.getSavedFileName()).normalize();
+        if (!savedFilePath.startsWith(uploadDirectory)
+                || !Files.isRegularFile(savedFilePath)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        MediaType contentType = MediaType.APPLICATION_OCTET_STREAM;
+        try {
+            String detectedContentType = Files.probeContentType(savedFilePath);
+            if (detectedContentType != null) {
+                contentType = MediaType.parseMediaType(detectedContentType);
+            }
+        } catch (IOException | IllegalArgumentException exception) {
+            contentType = MediaType.APPLICATION_OCTET_STREAM;
+        }
+
+        String downloadFileName = archiveFile.getOriginalFileName();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(contentType);
+        headers.setContentDisposition(ContentDisposition.attachment()
+                .filename(downloadFileName, StandardCharsets.UTF_8)
+                .build());
+
+        try {
+            headers.setContentLength(Files.size(savedFilePath));
+        } catch (IOException exception) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(new FileSystemResource(savedFilePath));
     }
 
     @GetMapping("/api/archives/{id}")
