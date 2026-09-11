@@ -22,6 +22,12 @@ public class BoardService {
         return boardRepository.findById(id);
     }
 
+    public boolean isOwner(Long id, String loginId) {
+        return boardRepository.findById(id)
+                .map(board -> board.getWriter().equals(loginId))
+                .orElse(false);
+    }
+
     public List<Board> findAll() {
         return boardRepository.findAll();
     }

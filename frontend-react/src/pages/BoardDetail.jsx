@@ -5,6 +5,7 @@ function BoardDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [board, setBoard] = useState(null)
+  const [loginId, setLoginId] = useState(null)
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -28,6 +29,20 @@ function BoardDetail() {
       })
   }, [id])
 
+  useEffect(() => {
+    fetch('http://localhost:8080/api/members/session', {
+      credentials: 'include',
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setLoginId(data.loggedIn ? data.loginId : null)
+      })
+      .catch((err) => {
+        console.error('세션 확인 에러:', err)
+        setLoginId(null)
+      })
+  }, [])
+
   const handleDelete = () => {
     if (!window.confirm('정말 삭제하시겠습니까?')) {
       return
@@ -42,13 +57,19 @@ function BoardDetail() {
     })
       .then((res) => {
         if (!res.ok) {
+          if (res.status === 401) {
+            throw new Error('로그인이 필요합니다.')
+          }
+          if (res.status === 403) {
+            throw new Error('게시글을 삭제할 권한이 없습니다.')
+          }
           throw new Error('게시글 삭제 실패')
         }
         navigate('/board')
       })
       .catch((err) => {
         console.error('게시글 삭제 에러:', err)
-        setErrorMessage('게시글을 삭제하지 못했습니다.')
+        setErrorMessage(err.message)
         setDeleting(false)
       })
   }
@@ -84,10 +105,14 @@ function BoardDetail() {
         {board.content}
       </div>
       <div style={{ marginTop: '20px' }}>
-        <Link to={`/board/${id}/edit`} style={{ marginRight: '10px' }}>수정</Link>
-        <button type="button" onClick={handleDelete} disabled={deleting} style={{ marginRight: '10px', padding: '4px 8px', cursor: deleting ? 'not-allowed' : 'pointer' }}>
-          {deleting ? '삭제 중...' : '삭제'}
-        </button>
+        {loginId === board.writer && (
+          <>
+            <Link to={`/board/${id}/edit`} style={{ marginRight: '10px' }}>수정</Link>
+            <button type="button" onClick={handleDelete} disabled={deleting} style={{ marginRight: '10px', padding: '4px 8px', cursor: deleting ? 'not-allowed' : 'pointer' }}>
+              {deleting ? '삭제 중...' : '삭제'}
+            </button>
+          </>
+        )}
         <Link to="/board">목록으로</Link>
       </div>
     </div>

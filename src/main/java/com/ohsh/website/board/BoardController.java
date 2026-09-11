@@ -1,5 +1,6 @@
 package com.ohsh.website.board;
 
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,13 @@ public class BoardController {
     }
 
     @PostMapping("/api/boards")
-    public ResponseEntity<Board> save(@RequestBody Board board) {
+    public ResponseEntity<?> save(@RequestBody Board board, HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        board.setWriter(loginId);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(boardService.save(board));
     }
@@ -40,16 +47,43 @@ public class BoardController {
     }
 
     @PutMapping("/api/boards/{id}")
-    public ResponseEntity<Board> update(
+    public ResponseEntity<?> update(
             @PathVariable Long id,
-            @RequestBody Board board) {
+            @RequestBody Board board,
+            HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (boardService.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (!boardService.isOwner(id, loginId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         return boardService.update(id, board.getTitle(), board.getContent())
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/api/boards/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (boardService.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (!boardService.isOwner(id, loginId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         if (!boardService.delete(id)) {
             return ResponseEntity.notFound().build();
         }
