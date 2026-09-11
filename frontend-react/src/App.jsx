@@ -124,8 +124,8 @@ function App() {
           <Route path="/qna/:id/edit" element={<QnaEdit />} />
           <Route path="/qna/:id" element={<QnaDetail />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/login" element={<Login onLogin={checkSession} />} />
+          <Route path="/mypage" element={<MyPage key={loginId || 'logged-out'} />} />
         </Routes>
       </div>
     </BrowserRouter>

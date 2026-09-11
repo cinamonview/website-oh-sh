@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-function Login() {
+function Login({ onLogin }) {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     loginId: '',
     password: '',
@@ -39,6 +41,10 @@ function Login() {
       .then((res) => res.json())
       .then((data) => {
         setResult(data)
+        if (data.success) {
+          onLogin()
+          navigate('/mypage')
+        }
       })
       .catch((err) => {
         console.error('로그인 요청 에러:', err)

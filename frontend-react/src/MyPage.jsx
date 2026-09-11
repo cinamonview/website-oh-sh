@@ -37,15 +37,18 @@ function MyPage() {
             setLoading(false)
           })
         } else if (res.status === 401) {
+          setMember(null)
           setErrorMessage('로그인이 필요합니다.')
           setLoading(false)
         } else {
+          setMember(null)
           setErrorMessage('회원 정보를 불러오지 못했습니다.')
           setLoading(false)
         }
       })
       .catch((err) => {
         console.error('회원 정보 조회 에러:', err)
+        setMember(null)
         setErrorMessage('회원 정보를 불러오지 못했습니다.')
         setLoading(false)
       })
