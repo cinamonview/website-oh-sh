@@ -52,6 +52,35 @@ function BoardDetail() {
       })
   }, [])
 
+  const handleLike = () => {
+    fetch(`http://localhost:8080/api/boards/${id}/like`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          navigate('/login')
+          return null
+        }
+        if (!res.ok) {
+          throw new Error('좋아요 처리 실패')
+        }
+        return res.json()
+      })
+      .then((data) => {
+        if (data) {
+          setBoard((prev) => ({
+            ...prev,
+            likeCount: data.likeCount ?? prev?.likeCount ?? 0,
+          }))
+        }
+      })
+      .catch((err) => {
+        console.error('게시글 좋아요 에러:', err)
+        setErrorMessage('좋아요 처리 중 오류가 발생했습니다.')
+      })
+  }
+
   const handleDelete = () => {
     if (!window.confirm('정말 삭제하시겠습니까?')) {
       return
@@ -110,6 +139,17 @@ function BoardDetail() {
         <p><strong>작성일:</strong> {board.createdAt}</p>
         <p><strong>수정일:</strong> {board.updatedAt}</p>
         <p><strong>조회수:</strong> {board.viewCount ?? 0}</p>
+        <button
+          type="button"
+          onClick={handleLike}
+          style={{
+            marginTop: '8px',
+            padding: '6px 12px',
+            cursor: 'pointer',
+          }}
+        >
+          ❤️ 좋아요 {board.likeCount ?? 0}
+        </button>
       </div>
       <div style={{ padding: '20px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', whiteSpace: 'pre-wrap' }}>
         {board.content}

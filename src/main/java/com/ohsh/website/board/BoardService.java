@@ -24,6 +24,14 @@ public class BoardService {
         return boardRepository.findById(id);
     }
 
+    public Optional<Board> like(Long id) {
+        return boardRepository.findById(id)
+                .map(board -> {
+                    board.setLikeCount(board.getLikeCount() == null ? 1L : board.getLikeCount() + 1L);
+                    return boardRepository.save(board);
+                });
+    }
+
     public boolean isOwner(Long id, String loginId) {
         return boardRepository.findById(id)
                 .map(board -> board.getWriter().equals(loginId))

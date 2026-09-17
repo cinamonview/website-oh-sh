@@ -70,6 +70,35 @@ function ArchiveDetail() {
       })
   }, [id])
 
+  const handleLike = () => {
+    fetch(`http://localhost:8080/api/archives/${id}/like`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          navigate('/login')
+          return null
+        }
+        if (!res.ok) {
+          throw new Error('좋아요 처리 실패')
+        }
+        return res.json()
+      })
+      .then((data) => {
+        if (data) {
+          setArchive((prev) => ({
+            ...prev,
+            likeCount: data.likeCount ?? prev?.likeCount ?? 0,
+          }))
+        }
+      })
+      .catch((err) => {
+        console.error('자료실 좋아요 에러:', err)
+        setErrorMessage('좋아요 처리 중 오류가 발생했습니다.')
+      })
+  }
+
   const handleDelete = () => {
     if (!window.confirm('정말 삭제하시겠습니까?')) {
       return
@@ -131,6 +160,17 @@ function ArchiveDetail() {
         <p><strong>작성일:</strong> {archive.createdAt}</p>
         <p><strong>수정일:</strong> {archive.updatedAt}</p>
         <p><strong>조회수:</strong> {archive.viewCount ?? 0}</p>
+        <button
+          type="button"
+          onClick={handleLike}
+          style={{
+            marginTop: '8px',
+            padding: '6px 12px',
+            cursor: 'pointer',
+          }}
+        >
+          ❤️ 좋아요 {archive.likeCount ?? 0}
+        </button>
       </div>
       <div style={{ padding: '20px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', whiteSpace: 'pre-wrap' }}>
         {archive.content}

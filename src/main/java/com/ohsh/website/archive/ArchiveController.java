@@ -212,6 +212,19 @@ public class ArchiveController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PostMapping("/api/archives/{id}/like")
+    public ResponseEntity<?> like(@PathVariable("id") Long id, HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return archiveService.like(id)
+                .map(archive -> ResponseEntity.ok(Map.of(
+                        "likeCount", archive.getLikeCount() == null ? 0L : archive.getLikeCount())))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @PutMapping("/api/archives/{id}")
     public ResponseEntity<?> update(
             @PathVariable("id") Long id,

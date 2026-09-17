@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -83,6 +83,19 @@ public class BoardController {
 
                     return ResponseEntity.ok(board);
                 })
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/api/boards/{id}/like")
+    public ResponseEntity<?> like(@PathVariable Long id, HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return boardService.like(id)
+                .map(board -> ResponseEntity.ok(Map.of(
+                        "likeCount", board.getLikeCount() == null ? 0L : board.getLikeCount())))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 

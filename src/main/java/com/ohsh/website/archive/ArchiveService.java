@@ -24,6 +24,14 @@ public class ArchiveService {
         return archiveRepository.findById(id);
     }
 
+    public Optional<Archive> like(Long id) {
+        return archiveRepository.findById(id)
+                .map(archive -> {
+                    archive.setLikeCount(archive.getLikeCount() == null ? 1L : archive.getLikeCount() + 1L);
+                    return archiveRepository.save(archive);
+                });
+    }
+
     public boolean isOwner(Long id, String loginId) {
         return archiveRepository.findById(id)
                 .map(archive -> archive.getWriter() != null && archive.getWriter().equals(loginId))

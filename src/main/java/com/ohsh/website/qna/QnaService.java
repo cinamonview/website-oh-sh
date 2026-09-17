@@ -24,6 +24,14 @@ public class QnaService {
         return qnaRepository.findById(id);
     }
 
+    public Optional<Qna> like(Long id) {
+        return qnaRepository.findById(id)
+                .map(qna -> {
+                    qna.setLikeCount(qna.getLikeCount() == null ? 1L : qna.getLikeCount() + 1L);
+                    return qnaRepository.save(qna);
+                });
+    }
+
     public boolean isOwner(Long id, String loginId) {
         return qnaRepository.findById(id)
                 .map(qna -> qna.getWriter().equals(loginId))

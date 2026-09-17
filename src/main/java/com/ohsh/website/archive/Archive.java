@@ -36,6 +36,9 @@ public class Archive {
     @Column(nullable = false)
     private Long viewCount = 0L;
 
+    @Column(nullable = false)
+    private Long likeCount = 0L;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;

@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -83,6 +83,19 @@ public class QnaController {
 
                     return ResponseEntity.ok(qna);
                 })
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/api/qnas/{id}/like")
+    public ResponseEntity<?> like(@PathVariable("id") Long id, HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return qnaService.like(id)
+                .map(qna -> ResponseEntity.ok(Map.of(
+                        "likeCount", qna.getLikeCount() == null ? 0L : qna.getLikeCount())))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 

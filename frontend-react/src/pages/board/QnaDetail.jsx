@@ -104,6 +104,35 @@ function QnaDetail() {
       })
   }
 
+  const handleLike = () => {
+    fetch(`http://localhost:8080/api/qnas/${id}/like`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          navigate('/login')
+          return null
+        }
+        if (!res.ok) {
+          throw new Error('좋아요 처리 실패')
+        }
+        return res.json()
+      })
+      .then((data) => {
+        if (data) {
+          setQna((prev) => ({
+            ...prev,
+            likeCount: data.likeCount ?? prev?.likeCount ?? 0,
+          }))
+        }
+      })
+      .catch((err) => {
+        console.error('Q&A 좋아요 에러:', err)
+        setCommentError('좋아요 처리 중 오류가 발생했습니다.')
+      })
+  }
+
   const handleCommentSubmit = (e) => {
     e.preventDefault()
 
@@ -303,6 +332,17 @@ function QnaDetail() {
         <p><strong>작성일:</strong> {formatDate(qna.createdAt)}</p>
         <p><strong>수정일:</strong> {formatDate(qna.updatedAt)}</p>
         <p><strong>조회수:</strong> {qna.viewCount ?? 0}</p>
+        <button
+          type="button"
+          onClick={handleLike}
+          style={{
+            marginTop: '8px',
+            padding: '6px 12px',
+            cursor: 'pointer',
+          }}
+        >
+          ❤️ 좋아요 {qna.likeCount ?? 0}
+        </button>
       </div>
       <div style={{ padding: '20px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', whiteSpace: 'pre-wrap' }}>
         {qna.content}
