@@ -6,6 +6,7 @@ function ArchiveDetail() {
   const navigate = useNavigate()
   const [archive, setArchive] = useState(null)
   const [attachments, setAttachments] = useState([])
+  const [loginId, setLoginId] = useState(null)
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -28,6 +29,20 @@ function ArchiveDetail() {
         setLoading(false)
       })
   }, [id])
+
+  useEffect(() => {
+    fetch('http://localhost:8080/api/members/session', {
+      credentials: 'include',
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setLoginId(data.loggedIn ? data.loginId : null)
+      })
+      .catch((err) => {
+        console.error('세션 확인 에러:', err)
+        setLoginId(null)
+      })
+  }, [])
 
   useEffect(() => {
     fetch(`http://localhost:8080/api/archives/${id}/files`)
@@ -60,13 +75,22 @@ function ArchiveDetail() {
     })
       .then((res) => {
         if (!res.ok) {
+          if (res.status === 401) {
+            throw new Error('로그인이 필요합니다.')
+          }
+          if (res.status === 403) {
+            throw new Error('자료실 게시글을 삭제할 권한이 없습니다.')
+          }
+          if (res.status === 404) {
+            throw new Error('자료실 게시글을 찾을 수 없습니다.')
+          }
           throw new Error('자료실 게시글 삭제 실패')
         }
         navigate('/archive')
       })
       .catch((err) => {
         console.error('자료실 게시글 삭제 에러:', err)
-        setErrorMessage('자료실 게시글을 삭제하지 못했습니다.')
+        setErrorMessage(err.message)
         setDeleting(false)
       })
   }
@@ -118,10 +142,16 @@ function ArchiveDetail() {
         </div>
       )}
       <div style={{ marginTop: '20px' }}>
-        <Link to={`/archive/${id}/edit`} style={{ marginRight: '10px' }}>수정</Link>
-        <button type="button" onClick={handleDelete} disabled={deleting} style={{ marginRight: '10px', padding: '4px 8px', cursor: deleting ? 'not-allowed' : 'pointer' }}>
-          {deleting ? '삭제 중...' : '삭제'}
-        </button>
+        {loginId === archive.writer && (
+          <>
+            <Link to={`/archive/${id}/edit`} style={{ marginRight: '10px' }}>수정</Link>
+            <button type="button" onClick={handleDelete} disabled={deleting} style={{ marginRight: '10px', padding: '4px 8px', cursor: deleting ? 'not-allowed' : 'pointer' }}>
+              {deleting ? '삭제 중...' : '삭제'}
+            </button>
+          </>
+        )}
+        {deleting && <p>자료실 게시글을 삭제하는 중...</p>}
+        {errorMessage && <p style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</p>}
         <Link to="/archive">목록으로</Link>
       </div>
     </div>

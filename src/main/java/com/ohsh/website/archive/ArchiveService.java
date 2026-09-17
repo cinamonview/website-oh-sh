@@ -22,6 +22,12 @@ public class ArchiveService {
         return archiveRepository.findById(id);
     }
 
+    public boolean isOwner(Long id, String loginId) {
+        return archiveRepository.findById(id)
+                .map(archive -> archive.getWriter() != null && archive.getWriter().equals(loginId))
+                .orElse(false);
+    }
+
     public List<Archive> findAll() {
         return archiveRepository.findAll();
     }

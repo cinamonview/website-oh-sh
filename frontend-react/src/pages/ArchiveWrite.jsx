@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom'
 
 function ArchiveWrite() {
   const navigate = useNavigate()
-  const [loginId, setLoginId] = useState('')
   const [selectedFile, setSelectedFile] = useState(null)
   const [formData, setFormData] = useState({
     title: '',
@@ -24,7 +23,6 @@ function ArchiveWrite() {
           return
         }
 
-        setLoginId(data.loginId)
         setLoading(false)
       })
       .catch((err) => {
@@ -66,11 +64,14 @@ function ArchiveWrite() {
         body: JSON.stringify({
           title: formData.title,
           content: formData.content,
-          writer: loginId,
         }),
       })
 
       if (!response.ok) {
+        if (response.status === 401) {
+          navigate('/login')
+          return
+        }
         throw new Error('자료실 게시글 등록 실패')
       }
 
@@ -88,11 +89,15 @@ function ArchiveWrite() {
         })
 
         if (!uploadResponse.ok) {
+          if (uploadResponse.status === 401) {
+            navigate('/login')
+            return
+          }
           throw new Error('파일 업로드 실패')
         }
       }
 
-        navigate(`/archive/${data.id}`)
+      navigate(`/archive/${data.id}`)
     } catch (err) {
       console.error('자료실 게시글 또는 파일 업로드 에러:', err)
       setErrorMessage(err.message === '파일 업로드 실패'

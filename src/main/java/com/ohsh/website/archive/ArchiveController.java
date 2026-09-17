@@ -1,5 +1,6 @@
 package com.ohsh.website.archive;
 
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -41,9 +42,19 @@ public class ArchiveController {
     @PostMapping(value = "/api/archives/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> upload(
             @RequestParam(value = "file", required = false) MultipartFile file,
-            @RequestParam(value = "archiveId", required = false) Long archiveId) {
+            @RequestParam(value = "archiveId", required = false) Long archiveId,
+            HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         if (archiveId == null || archiveService.findById(archiveId).isEmpty()) {
             return ResponseEntity.notFound().build();
+        }
+
+        if (!archiveService.isOwner(archiveId, loginId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         if (file == null || file.isEmpty()) {
@@ -88,7 +99,13 @@ public class ArchiveController {
     }
 
     @PostMapping("/api/archives")
-    public ResponseEntity<Archive> save(@RequestBody Archive archive) {
+    public ResponseEntity<?> save(@RequestBody Archive archive, HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        archive.setWriter(loginId);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(archiveService.save(archive));
     }
@@ -157,16 +174,45 @@ public class ArchiveController {
     }
 
     @PutMapping("/api/archives/{id}")
-    public ResponseEntity<Archive> update(
-            @PathVariable Long id,
-            @RequestBody Archive archive) {
+    public ResponseEntity<?> update(
+            @PathVariable("id") Long id,
+            @RequestBody Archive archive,
+            HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (archiveService.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (!archiveService.isOwner(id, loginId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         return archiveService.update(id, archive.getTitle(), archive.getContent())
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/api/archives/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(
+            @PathVariable("id") Long id,
+            HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (archiveService.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (!archiveService.isOwner(id, loginId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         if (!archiveService.delete(id)) {
             return ResponseEntity.notFound().build();
         }
