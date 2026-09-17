@@ -1,5 +1,8 @@
 package com.ohsh.website.archive;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -7,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
 import java.util.List;
@@ -173,9 +177,38 @@ public class ArchiveController {
     }
 
     @GetMapping("/api/archives/{id}")
-    public ResponseEntity<Archive> findById(@PathVariable Long id) {
+    public ResponseEntity<Archive> findById(
+            @PathVariable Long id,
+            HttpServletRequest request,
+            HttpServletResponse response) {
         return archiveService.findById(id)
-                .map(ResponseEntity::ok)
+                .map(archive -> {
+                    String cookieName = "archive_view_" + id;
+                    String today = LocalDate.now().toString();
+                    Cookie[] cookies = request.getCookies();
+                    boolean alreadyViewedToday = false;
+
+                    if (cookies != null) {
+                        for (Cookie cookie : cookies) {
+                            if (cookieName.equals(cookie.getName()) && today.equals(cookie.getValue())) {
+                                alreadyViewedToday = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!alreadyViewedToday) {
+                        archive.setViewCount(archive.getViewCount() == null ? 0L : archive.getViewCount() + 1L);
+                        archiveService.save(archive);
+
+                        Cookie viewCookie = new Cookie(cookieName, today);
+                        viewCookie.setPath("/");
+                        viewCookie.setMaxAge(60 * 60 * 24);
+                        response.addCookie(viewCookie);
+                    }
+
+                    return ResponseEntity.ok(archive);
+                })
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 

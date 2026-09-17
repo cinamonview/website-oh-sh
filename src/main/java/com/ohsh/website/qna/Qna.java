@@ -33,6 +33,9 @@ public class Qna {
     @Column(nullable = false)
     private String writer;
 
+    @Column(nullable = false)
+    private Long viewCount = 0L;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;

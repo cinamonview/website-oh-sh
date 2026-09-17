@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 function ArchiveDetail() {
@@ -10,9 +10,18 @@ function ArchiveDetail() {
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const requestedArchiveIdRef = useRef(null)
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/archives/${id}`)
+    if (requestedArchiveIdRef.current === id) {
+      return
+    }
+
+    requestedArchiveIdRef.current = id
+
+    fetch(`http://localhost:8080/api/archives/${id}`, {
+      credentials: 'include',
+    })
       .then((res) => {
         if (!res.ok) {
           throw new Error('자료실 게시글 조회 실패')
@@ -121,6 +130,7 @@ function ArchiveDetail() {
         <p><strong>작성자:</strong> {archive.writer}</p>
         <p><strong>작성일:</strong> {archive.createdAt}</p>
         <p><strong>수정일:</strong> {archive.updatedAt}</p>
+        <p><strong>조회수:</strong> {archive.viewCount ?? 0}</p>
       </div>
       <div style={{ padding: '20px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', whiteSpace: 'pre-wrap' }}>
         {archive.content}

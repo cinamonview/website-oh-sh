@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 function formatDate(dateValue) {
@@ -26,9 +26,18 @@ function QnaDetail() {
   const [editingContent, setEditingContent] = useState('')
   const [commentSubmitting, setCommentSubmitting] = useState(false)
   const [commentActionId, setCommentActionId] = useState(null)
+  const requestedQnaIdRef = useRef(null)
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/qnas/${id}`)
+    if (requestedQnaIdRef.current === id) {
+      return
+    }
+
+    requestedQnaIdRef.current = id
+
+    fetch(`http://localhost:8080/api/qnas/${id}`, {
+      credentials: 'include',
+    })
       .then((res) => {
         if (!res.ok) {
           throw new Error('Q&A 게시글 조회 실패')
@@ -293,6 +302,7 @@ function QnaDetail() {
         <p><strong>작성자:</strong> {qna.writer}</p>
         <p><strong>작성일:</strong> {formatDate(qna.createdAt)}</p>
         <p><strong>수정일:</strong> {formatDate(qna.updatedAt)}</p>
+        <p><strong>조회수:</strong> {qna.viewCount ?? 0}</p>
       </div>
       <div style={{ padding: '20px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', whiteSpace: 'pre-wrap' }}>
         {qna.content}
