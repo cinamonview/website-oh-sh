@@ -25,7 +25,7 @@ function ForgotPassword() {
     setIsSuccess(false)
     setIsSending(true)
 
-    fetch('http://localhost:8080/api/members/password/reset', {
+    fetch('/api/members/password/reset', {
       method: 'POST',
       credentials: 'include',
       headers: {

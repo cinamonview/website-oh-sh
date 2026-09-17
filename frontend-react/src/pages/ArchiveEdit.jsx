@@ -16,8 +16,8 @@ function ArchiveEdit() {
 
   useEffect(() => {
     Promise.all([
-      fetch(`http://localhost:8080/api/archives/${id}`),
-      fetch('http://localhost:8080/api/members/session', {
+      fetch(`/api/archives/${id}`),
+      fetch('/api/members/session', {
         credentials: 'include',
       }),
     ])
@@ -79,7 +79,7 @@ function ArchiveEdit() {
 
     setSaving(true)
 
-    fetch(`http://localhost:8080/api/archives/${id}`, {
+    fetch(`/api/archives/${id}`, {
       method: 'PUT',
       credentials: 'include',
       headers: {

@@ -20,7 +20,7 @@ import QnaEdit from './pages/board/QnaEdit.jsx'
 
 function TestMember() {
   const sendMember = () => {
-    fetch('http://localhost:8080/api/test-member', {
+    fetch('/api/test-member', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ function App() {
   const [loginId, setLoginId] = useState(null)
 
   const checkSession = () => {
-    fetch('http://localhost:8080/api/members/session', {
+    fetch('/api/members/session', {
       credentials: 'include',
     })
       .then((res) => res.json())
@@ -123,7 +123,7 @@ function App() {
   }, [])
 
   const handleLogout = () => {
-    fetch('http://localhost:8080/api/members/logout', {
+    fetch('/api/members/logout', {
       method: 'POST',
       credentials: 'include',
     })

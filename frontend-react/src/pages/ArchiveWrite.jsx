@@ -14,7 +14,7 @@ function ArchiveWrite() {
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/members/session', {
+    fetch('/api/members/session', {
       credentials: 'include',
     })
       .then((res) => res.json())
@@ -56,7 +56,7 @@ function ArchiveWrite() {
     setSaving(true)
 
     try {
-      const response = await fetch('http://localhost:8080/api/archives', {
+      const response = await fetch('/api/archives', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -83,7 +83,7 @@ function ArchiveWrite() {
         uploadFormData.append('file', selectedFile)
         uploadFormData.append('archiveId', data.id)
 
-        const uploadResponse = await fetch('http://localhost:8080/api/archives/upload', {
+        const uploadResponse = await fetch('/api/archives/upload', {
           method: 'POST',
           credentials: 'include',
           body: uploadFormData,

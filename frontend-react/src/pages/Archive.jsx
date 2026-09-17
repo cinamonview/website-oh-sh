@@ -10,7 +10,7 @@ function Archive() {
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/archives?page=${currentPage}&size=10`)
+    fetch(`/api/archives?page=${currentPage}&size=10`)
       .then((res) => {
         if (!res.ok) {
           throw new Error('자료실 목록 조회 실패')

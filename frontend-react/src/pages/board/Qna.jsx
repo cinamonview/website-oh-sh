@@ -19,7 +19,7 @@ function Qna() {
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/qnas?page=${currentPage}&size=10`)
+    fetch(`/api/qnas?page=${currentPage}&size=10`)
       .then((res) => {
         if (!res.ok) {
           throw new Error('Q&A 목록 조회 실패')

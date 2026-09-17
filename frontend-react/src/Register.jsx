@@ -69,7 +69,7 @@ function Register() {
       return
     }
 
-    fetch(`http://localhost:8080/api/members/check-login-id?loginId=${encodeURIComponent(formData.loginId)}`)
+    fetch(`/api/members/check-login-id?loginId=${encodeURIComponent(formData.loginId)}`)
       .then((res) => res.json())
       .then((exists) => {
         setIsIdChecked(true)
@@ -99,7 +99,7 @@ function Register() {
     setEmailMessage('')
     setIsEmailMessageValid(false)
 
-    fetch('http://localhost:8080/api/email/send-code', {
+    fetch('/api/email/send-code', {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -135,7 +135,7 @@ function Register() {
     setEmailMessage('')
     setIsEmailMessageValid(false)
 
-    fetch('http://localhost:8080/api/email/verify-code', {
+    fetch('/api/email/verify-code', {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -194,7 +194,7 @@ function Register() {
     }
 
     // 회원가입 API 호출
-    fetch('http://localhost:8080/api/members', {
+    fetch('/api/members', {
       method: 'POST',
       credentials: 'include',
       headers: {

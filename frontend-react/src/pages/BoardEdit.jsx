@@ -16,8 +16,8 @@ function BoardEdit() {
 
   useEffect(() => {
     Promise.all([
-      fetch(`http://localhost:8080/api/boards/${id}`),
-      fetch('http://localhost:8080/api/members/session', {
+      fetch(`/api/boards/${id}`),
+      fetch('/api/members/session', {
         credentials: 'include',
       }),
     ])
@@ -79,7 +79,7 @@ function BoardEdit() {
 
     setSaving(true)
 
-    fetch(`http://localhost:8080/api/boards/${id}`, {
+    fetch(`/api/boards/${id}`, {
       method: 'PUT',
       credentials: 'include',
       headers: {

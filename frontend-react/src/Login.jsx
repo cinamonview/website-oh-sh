@@ -52,7 +52,7 @@ function Login({ onLogin }) {
       return
     }
 
-    fetch('http://localhost:8080/api/members/login', {
+    fetch('/api/members/login', {
       method: 'POST',
       credentials: 'include',
       headers: {

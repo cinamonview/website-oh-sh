@@ -28,7 +28,7 @@ function MyPage() {
   const [pwSuccess, setPwSuccess] = useState('')
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/members/me', {
+    fetch('/api/members/me', {
       credentials: 'include',
     })
       .then((res) => {
@@ -87,7 +87,7 @@ function MyPage() {
     setSaving(true)
     setUpdateError('')
 
-    fetch('http://localhost:8080/api/members/me', {
+    fetch('/api/members/me', {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -156,7 +156,7 @@ function MyPage() {
 
     setPwSaving(true)
 
-    fetch('http://localhost:8080/api/members/password', {
+    fetch('/api/members/password', {
       method: 'PUT',
       credentials: 'include',
       headers: {

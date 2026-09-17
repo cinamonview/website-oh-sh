@@ -19,7 +19,7 @@ function BoardDetail() {
 
     requestedBoardIdRef.current = id
 
-    fetch(`http://localhost:8080/api/boards/${id}`, {
+    fetch(`/api/boards/${id}`, {
       credentials: 'include',
     })
       .then((res) => {
@@ -40,7 +40,7 @@ function BoardDetail() {
   }, [id])
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/members/session', {
+    fetch('/api/members/session', {
       credentials: 'include',
     })
       .then((res) => res.json())
@@ -54,7 +54,7 @@ function BoardDetail() {
   }, [])
 
   const handleLike = () => {
-    fetch(`http://localhost:8080/api/boards/${id}/like`, {
+    fetch(`/api/boards/${id}/like`, {
       method: 'POST',
       credentials: 'include',
     })
@@ -90,7 +90,7 @@ function BoardDetail() {
     setDeleting(true)
     setErrorMessage('')
 
-    fetch(`http://localhost:8080/api/boards/${id}`, {
+    fetch(`/api/boards/${id}`, {
       method: 'DELETE',
       credentials: 'include',
     })

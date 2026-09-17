@@ -13,7 +13,7 @@ function BoardWrite() {
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/members/session', {
+    fetch('/api/members/session', {
       credentials: 'include',
     })
       .then((res) => res.json())
@@ -50,7 +50,7 @@ function BoardWrite() {
 
     setSaving(true)
 
-    fetch('http://localhost:8080/api/boards', {
+    fetch('/api/boards', {
       method: 'POST',
       credentials: 'include',
       headers: {

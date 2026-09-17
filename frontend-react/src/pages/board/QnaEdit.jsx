@@ -16,8 +16,8 @@ function QnaEdit() {
 
   useEffect(() => {
     Promise.all([
-      fetch(`http://localhost:8080/api/qnas/${id}`),
-      fetch('http://localhost:8080/api/members/session', {
+      fetch(`/api/qnas/${id}`),
+      fetch('/api/members/session', {
         credentials: 'include',
       }),
     ])
@@ -79,7 +79,7 @@ function QnaEdit() {
 
     setSaving(true)
 
-    fetch(`http://localhost:8080/api/qnas/${id}`, {
+    fetch(`/api/qnas/${id}`, {
       method: 'PUT',
       credentials: 'include',
       headers: {

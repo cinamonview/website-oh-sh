@@ -10,7 +10,7 @@ function Board() {
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/boards?page=${currentPage}&size=10`)
+    fetch(`/api/boards?page=${currentPage}&size=10`)
       .then((res) => {
         if (!res.ok) {
           throw new Error('게시글 목록 조회 실패')

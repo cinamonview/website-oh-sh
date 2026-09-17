@@ -36,7 +36,7 @@ function QnaDetail() {
 
     requestedQnaIdRef.current = id
 
-    fetch(`http://localhost:8080/api/qnas/${id}`, {
+    fetch(`/api/qnas/${id}`, {
       credentials: 'include',
     })
       .then((res) => {
@@ -49,7 +49,7 @@ function QnaDetail() {
         setQna(data)
         setLoading(false)
 
-        return fetch(`http://localhost:8080/api/qnas/${id}/comments`, {
+        return fetch(`/api/qnas/${id}/comments`, {
           credentials: 'include',
         })
           .then((commentsResponse) => {
@@ -76,7 +76,7 @@ function QnaDetail() {
         setLoading(false)
       })
 
-    fetch('http://localhost:8080/api/members/session', {
+    fetch('/api/members/session', {
       credentials: 'include',
     })
       .then((res) => res.json())
@@ -90,7 +90,7 @@ function QnaDetail() {
   }, [id])
 
   const reloadComments = () => {
-    return fetch(`http://localhost:8080/api/qnas/${id}/comments`, {
+    return fetch(`/api/qnas/${id}/comments`, {
       credentials: 'include',
     })
       .then((res) => {
@@ -106,7 +106,7 @@ function QnaDetail() {
   }
 
   const handleLike = () => {
-    fetch(`http://localhost:8080/api/qnas/${id}/like`, {
+    fetch(`/api/qnas/${id}/like`, {
       method: 'POST',
       credentials: 'include',
     })
@@ -150,7 +150,7 @@ function QnaDetail() {
     setCommentSubmitting(true)
     setCommentError('')
 
-    fetch(`http://localhost:8080/api/qnas/${id}/comments`, {
+    fetch(`/api/qnas/${id}/comments`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -199,7 +199,7 @@ function QnaDetail() {
     setCommentActionId(commentId)
     setCommentError('')
 
-    fetch(`http://localhost:8080/api/comments/${commentId}`, {
+    fetch(`/api/comments/${commentId}`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -246,7 +246,7 @@ function QnaDetail() {
     setCommentActionId(commentId)
     setCommentError('')
 
-    fetch(`http://localhost:8080/api/comments/${commentId}`, {
+    fetch(`/api/comments/${commentId}`, {
       method: 'DELETE',
       credentials: 'include',
     })
@@ -283,7 +283,7 @@ function QnaDetail() {
     setDeleting(true)
     setErrorMessage('')
 
-    fetch(`http://localhost:8080/api/qnas/${id}`, {
+    fetch(`/api/qnas/${id}`, {
       method: 'DELETE',
       credentials: 'include',
     })

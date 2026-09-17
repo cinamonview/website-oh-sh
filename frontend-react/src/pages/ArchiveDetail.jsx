@@ -47,7 +47,7 @@ function ArchiveDetail() {
 
     requestedArchiveIdRef.current = id
 
-    fetch(`http://localhost:8080/api/archives/${id}`, {
+    fetch(`/api/archives/${id}`, {
       credentials: 'include',
     })
       .then((res) => {
@@ -68,7 +68,7 @@ function ArchiveDetail() {
   }, [id])
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/members/session', {
+    fetch('/api/members/session', {
       credentials: 'include',
     })
       .then((res) => res.json())
@@ -82,7 +82,7 @@ function ArchiveDetail() {
   }, [])
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/archives/${id}/files`)
+    fetch(`/api/archives/${id}/files`)
       .then((res) => {
         if (!res.ok) {
           throw new Error('첨부파일 목록 조회 실패')
@@ -99,7 +99,7 @@ function ArchiveDetail() {
   }, [id])
 
   const handleLike = () => {
-    fetch(`http://localhost:8080/api/archives/${id}/like`, {
+    fetch(`/api/archives/${id}/like`, {
       method: 'POST',
       credentials: 'include',
     })
@@ -135,7 +135,7 @@ function ArchiveDetail() {
     setDeleting(true)
     setErrorMessage('')
 
-    fetch(`http://localhost:8080/api/archives/${id}`, {
+    fetch(`/api/archives/${id}`, {
       method: 'DELETE',
       credentials: 'include',
     })
@@ -214,7 +214,7 @@ function ArchiveDetail() {
               {getAttachmentType(attachment.originalFileName) === 'image' && (
                 <img
                   className="archive-preview-image"
-                  src={`http://localhost:8080/api/archives/files/${attachment.id}/preview`}
+                  src={`/api/archives/files/${attachment.id}/preview`}
                   alt={attachment.originalFileName || '첨부 이미지'}
                 />
               )}
@@ -223,21 +223,21 @@ function ArchiveDetail() {
                   className="archive-preview-video"
                   controls
                   preload="metadata"
-                  src={`http://localhost:8080/api/archives/files/${attachment.id}/preview`}
+                  src={`/api/archives/files/${attachment.id}/preview`}
                 />
               )}
               {getAttachmentType(attachment.originalFileName) === 'audio' && (
                 <audio
                   className="archive-preview-audio"
                   controls
-                  src={`http://localhost:8080/api/archives/files/${attachment.id}/preview`}
+                  src={`/api/archives/files/${attachment.id}/preview`}
                 />
               )}
               {getAttachmentType(attachment.originalFileName) === 'file' ? (
                 <>
                   <a
                     className="archive-download-link"
-                    href={`http://localhost:8080/api/archives/files/${attachment.id}/download`}
+                    href={`/api/archives/files/${attachment.id}/download`}
                     download
                   >
                     {attachment.originalFileName}

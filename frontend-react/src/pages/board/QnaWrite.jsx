@@ -13,7 +13,7 @@ function QnaWrite() {
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/members/session', {
+    fetch('/api/members/session', {
       credentials: 'include',
     })
       .then((res) => res.json())
@@ -50,7 +50,7 @@ function QnaWrite() {
 
     setSaving(true)
 
-    fetch('http://localhost:8080/api/qnas', {
+    fetch('/api/qnas', {
       method: 'POST',
       credentials: 'include',
       headers: {
