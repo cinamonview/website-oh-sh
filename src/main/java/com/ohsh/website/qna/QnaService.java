@@ -22,6 +22,12 @@ public class QnaService {
         return qnaRepository.findById(id);
     }
 
+    public boolean isOwner(Long id, String loginId) {
+        return qnaRepository.findById(id)
+                .map(qna -> qna.getWriter().equals(loginId))
+                .orElse(false);
+    }
+
     public List<Qna> findAll() {
         return qnaRepository.findAll();
     }

@@ -1,5 +1,6 @@
 package com.ohsh.website.qna;
 
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,13 @@ public class QnaController {
     }
 
     @PostMapping("/api/qnas")
-    public ResponseEntity<Qna> save(@RequestBody Qna qna) {
+    public ResponseEntity<?> save(@RequestBody Qna qna, HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        qna.setWriter(loginId);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(qnaService.save(qna));
     }
@@ -33,23 +40,50 @@ public class QnaController {
     }
 
     @GetMapping("/api/qnas/{id}")
-    public ResponseEntity<Qna> findById(@PathVariable Long id) {
+    public ResponseEntity<Qna> findById(@PathVariable("id") Long id) {
         return qnaService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/api/qnas/{id}")
-    public ResponseEntity<Qna> update(
-            @PathVariable Long id,
-            @RequestBody Qna qna) {
+    public ResponseEntity<?> update(
+            @PathVariable("id") Long id,
+            @RequestBody Qna qna,
+            HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (qnaService.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (!qnaService.isOwner(id, loginId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         return qnaService.update(id, qna.getTitle(), qna.getContent())
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/api/qnas/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id, HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (qnaService.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (!qnaService.isOwner(id, loginId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         if (!qnaService.delete(id)) {
             return ResponseEntity.notFound().build();
         }

@@ -223,13 +223,19 @@ function QnaDetail() {
     })
       .then((res) => {
         if (!res.ok) {
+          if (res.status === 401) {
+            throw new Error('로그인이 필요합니다.')
+          }
+          if (res.status === 403) {
+            throw new Error('Q&A 게시글을 삭제할 권한이 없습니다.')
+          }
           throw new Error('Q&A 게시글 삭제 실패')
         }
         navigate('/qna')
       })
       .catch((err) => {
         console.error('Q&A 게시글 삭제 에러:', err)
-        setErrorMessage('Q&A 게시글을 삭제하지 못했습니다.')
+        setErrorMessage(err.message)
         setDeleting(false)
       })
   }
@@ -265,10 +271,14 @@ function QnaDetail() {
         {qna.content}
       </div>
       <div style={{ marginTop: '20px' }}>
-        <Link to={`/qna/${id}/edit`} style={{ marginRight: '10px' }}>수정</Link>
-        <button type="button" onClick={handleDelete} disabled={deleting} style={{ marginRight: '10px', padding: '4px 8px', cursor: deleting ? 'not-allowed' : 'pointer' }}>
-          {deleting ? '삭제 중...' : '삭제'}
-        </button>
+        {loginId === qna.writer && (
+          <>
+            <Link to={`/qna/${id}/edit`} style={{ marginRight: '10px' }}>수정</Link>
+            <button type="button" onClick={handleDelete} disabled={deleting} style={{ marginRight: '10px', padding: '4px 8px', cursor: deleting ? 'not-allowed' : 'pointer' }}>
+              {deleting ? '삭제 중...' : '삭제'}
+            </button>
+          </>
+        )}
         {deleting && <p>Q&A 게시글을 삭제하는 중...</p>}
         {errorMessage && <p style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</p>}
         <Link to="/qna">목록으로</Link>

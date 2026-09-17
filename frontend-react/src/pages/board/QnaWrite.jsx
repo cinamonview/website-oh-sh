@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom'
 
 function QnaWrite() {
   const navigate = useNavigate()
-  const [loginId, setLoginId] = useState('')
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -23,7 +22,6 @@ function QnaWrite() {
           return
         }
 
-        setLoginId(data.loginId)
         setLoading(false)
       })
       .catch((err) => {
@@ -60,7 +58,6 @@ function QnaWrite() {
       body: JSON.stringify({
         title: formData.title,
         content: formData.content,
-        writer: loginId,
       }),
     })
       .then((res) => {

@@ -8,19 +8,44 @@ function QnaEdit() {
     title: '',
     content: '',
   })
+  const [qna, setQna] = useState(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/qnas/${id}`)
-      .then((res) => {
-        if (!res.ok) {
+    Promise.all([
+      fetch(`http://localhost:8080/api/qnas/${id}`),
+      fetch('http://localhost:8080/api/members/session', {
+        credentials: 'include',
+      }),
+    ])
+      .then(async ([qnaResponse, sessionResponse]) => {
+        if (!sessionResponse.ok) {
+          navigate('/login')
+          return
+        }
+
+        const session = await sessionResponse.json()
+        if (!session.loggedIn) {
+          navigate('/login')
+          return
+        }
+
+        if (qnaResponse.status === 404) {
+          throw new Error('Q&A 게시글을 찾을 수 없습니다.')
+        }
+        if (!qnaResponse.ok) {
           throw new Error('Q&A 게시글 조회 실패')
         }
-        return res.json()
-      })
-      .then((data) => {
+
+        const data = await qnaResponse.json()
+        if (data.writer !== session.loginId) {
+          navigate(`/qna/${id}`)
+          return
+        }
+
+        setQna(data)
         setFormData({
           title: data.title || '',
           content: data.content || '',
@@ -29,10 +54,10 @@ function QnaEdit() {
       })
       .catch((err) => {
         console.error('Q&A 수정 대상 조회 에러:', err)
-        setErrorMessage('Q&A 게시글을 불러오지 못했습니다.')
+        setErrorMessage(err.message)
         setLoading(false)
       })
-  }, [id])
+  }, [id, navigate])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -66,6 +91,15 @@ function QnaEdit() {
     })
       .then((res) => {
         if (!res.ok) {
+          if (res.status === 401) {
+            throw new Error('로그인이 필요합니다.')
+          }
+          if (res.status === 403) {
+            throw new Error('Q&A 게시글을 수정할 권한이 없습니다.')
+          }
+          if (res.status === 404) {
+            throw new Error('Q&A 게시글을 찾을 수 없습니다.')
+          }
           throw new Error('Q&A 게시글 수정 실패')
         }
         return res.json()
@@ -75,7 +109,7 @@ function QnaEdit() {
       })
       .catch((err) => {
         console.error('Q&A 게시글 수정 에러:', err)
-        setErrorMessage('Q&A 게시글을 수정하지 못했습니다.')
+        setErrorMessage(err.message)
         setSaving(false)
       })
   }
@@ -87,6 +121,10 @@ function QnaEdit() {
         <p>Q&A 게시글을 불러오는 중...</p>
       </div>
     )
+  }
+
+  if (!qna) {
+    return null
   }
 
   return (
