@@ -119,17 +119,22 @@ function QnaDetail() {
       },
       body: JSON.stringify({
         content: commentContent,
-        writer: loginId,
       }),
     })
       .then((res) => {
         if (!res.ok) {
+          if (res.status === 401) {
+            navigate('/login')
+            return null
+          }
           throw new Error('댓글 등록 실패')
         }
         return reloadComments()
       })
-      .then(() => {
-        setCommentContent('')
+      .then((result) => {
+        if (result !== null) {
+          setCommentContent('')
+        }
       })
       .catch((err) => {
         console.error('댓글 등록 에러:', err)
@@ -165,17 +170,29 @@ function QnaDetail() {
     })
       .then((res) => {
         if (!res.ok) {
+          if (res.status === 401) {
+            navigate('/login')
+            return null
+          }
+          if (res.status === 403) {
+            throw new Error('댓글을 수정할 권한이 없습니다.')
+          }
+          if (res.status === 404) {
+            throw new Error('댓글을 찾을 수 없습니다.')
+          }
           throw new Error('댓글 수정 실패')
         }
         return reloadComments()
       })
-      .then(() => {
-        setEditingCommentId(null)
-        setEditingContent('')
+      .then((result) => {
+        if (result !== null) {
+          setEditingCommentId(null)
+          setEditingContent('')
+        }
       })
       .catch((err) => {
         console.error('댓글 수정 에러:', err)
-        setCommentError('댓글을 수정하지 못했습니다.')
+        setCommentError(err.message || '댓글을 수정하지 못했습니다.')
       })
       .finally(() => {
         setCommentActionId(null)
@@ -196,13 +213,23 @@ function QnaDetail() {
     })
       .then((res) => {
         if (!res.ok) {
+          if (res.status === 401) {
+            navigate('/login')
+            return null
+          }
+          if (res.status === 403) {
+            throw new Error('댓글을 삭제할 권한이 없습니다.')
+          }
+          if (res.status === 404) {
+            throw new Error('댓글을 찾을 수 없습니다.')
+          }
           throw new Error('댓글 삭제 실패')
         }
         return reloadComments()
       })
       .catch((err) => {
         console.error('댓글 삭제 에러:', err)
-        setCommentError('댓글을 삭제하지 못했습니다.')
+        setCommentError(err.message || '댓글을 삭제하지 못했습니다.')
       })
       .finally(() => {
         setCommentActionId(null)

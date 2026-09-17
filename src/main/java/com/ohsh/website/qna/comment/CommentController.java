@@ -1,5 +1,6 @@
 package com.ohsh.website.qna.comment;
 
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -23,20 +24,27 @@ public class CommentController {
 
     @PostMapping("/api/qnas/{qnaId}/comments")
     public ResponseEntity<Comment> save(
-            @PathVariable Long qnaId,
-            @RequestBody Comment comment) {
+            @PathVariable("qnaId") Long qnaId,
+            @RequestBody Comment comment,
+            HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        comment.setWriter(loginId);
         return commentService.save(qnaId, comment)
                 .map(savedComment -> ResponseEntity.status(HttpStatus.CREATED).body(savedComment))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/api/qnas/{qnaId}/comments")
-    public List<Comment> findByQnaId(@PathVariable Long qnaId) {
+    public List<Comment> findByQnaId(@PathVariable("qnaId") Long qnaId) {
         return commentService.findByQnaId(qnaId);
     }
 
     @GetMapping("/api/comments/{id}")
-    public ResponseEntity<Comment> findById(@PathVariable Long id) {
+    public ResponseEntity<Comment> findById(@PathVariable("id") Long id) {
         return commentService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -44,15 +52,44 @@ public class CommentController {
 
     @PutMapping("/api/comments/{id}")
     public ResponseEntity<Comment> update(
-            @PathVariable Long id,
-            @RequestBody Comment comment) {
+            @PathVariable("id") Long id,
+            @RequestBody Comment comment,
+            HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (commentService.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (!commentService.isOwner(id, loginId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         return commentService.update(id, comment.getContent())
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/api/comments/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(
+            @PathVariable("id") Long id,
+            HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (commentService.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (!commentService.isOwner(id, loginId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         if (!commentService.delete(id)) {
             return ResponseEntity.notFound().build();
         }

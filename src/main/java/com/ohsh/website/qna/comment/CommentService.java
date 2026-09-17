@@ -30,6 +30,12 @@ public class CommentService {
         return commentRepository.findById(id);
     }
 
+    public boolean isOwner(Long id, String loginId) {
+        return commentRepository.findById(id)
+                .map(comment -> comment.getWriter() != null && comment.getWriter().equals(loginId))
+                .orElse(false);
+    }
+
     public List<Comment> findByQnaId(Long qnaId) {
         return commentRepository.findByQnaIdOrderByCreatedAtAsc(qnaId);
     }
