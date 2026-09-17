@@ -1,13 +1,37 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+const SAVED_LOGIN_ID_COOKIE = 'savedLoginId'
+const SAVED_LOGIN_ID_EXPIRE_DAYS = 30
+
+function getSavedLoginIdCookie() {
+  const cookies = document.cookie.split('; ')
+  for (const cookie of cookies) {
+    const [name, ...rest] = cookie.split('=')
+    if (name === SAVED_LOGIN_ID_COOKIE) {
+      return decodeURIComponent(rest.join('='))
+    }
+  }
+  return ''
+}
+
+function setSavedLoginIdCookie(loginId) {
+  const expires = new Date()
+  expires.setDate(expires.getDate() + SAVED_LOGIN_ID_EXPIRE_DAYS)
+  document.cookie = `${SAVED_LOGIN_ID_COOKIE}=${encodeURIComponent(loginId)}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`
+}
+
+function removeSavedLoginIdCookie() {
+  document.cookie = `${SAVED_LOGIN_ID_COOKIE}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`
+}
+
 function Login({ onLogin }) {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
-    loginId: '',
+    loginId: getSavedLoginIdCookie(),
     password: '',
   })
-
+  const [rememberLoginId, setRememberLoginId] = useState(Boolean(getSavedLoginIdCookie()))
   const [result, setResult] = useState(null) // { success: boolean, message: string }
 
   const handleChange = (e) => {
@@ -42,6 +66,11 @@ function Login({ onLogin }) {
       .then((data) => {
         setResult(data)
         if (data.success) {
+          if (rememberLoginId) {
+            setSavedLoginIdCookie(formData.loginId)
+          } else {
+            removeSavedLoginIdCookie()
+          }
           onLogin()
           navigate('/mypage')
         }
@@ -83,6 +112,17 @@ function Login({ onLogin }) {
             required
             style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
           />
+        </div>
+
+        <div style={{ marginBottom: '16px' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <input
+              type="checkbox"
+              checked={rememberLoginId}
+              onChange={(e) => setRememberLoginId(e.target.checked)}
+            />
+            아이디 저장
+          </label>
         </div>
 
         {/* 로그인 버튼 */}
