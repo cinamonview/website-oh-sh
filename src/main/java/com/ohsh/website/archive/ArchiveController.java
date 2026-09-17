@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -111,8 +114,11 @@ public class ArchiveController {
     }
 
     @GetMapping("/api/archives")
-    public List<Archive> findAll() {
-        return archiveService.findAll();
+    public Page<Archive> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return archiveService.findAll(pageable);
     }
 
     @GetMapping("/api/archives/{archiveId}/files")

@@ -3,6 +3,8 @@ package com.ohsh.website.board;
 import java.util.Optional;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,6 +28,10 @@ public class BoardService {
         return boardRepository.findById(id)
                 .map(board -> board.getWriter().equals(loginId))
                 .orElse(false);
+    }
+
+    public Page<Board> findAll(Pageable pageable) {
+        return boardRepository.findAll(pageable);
     }
 
     public List<Board> findAll() {

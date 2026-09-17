@@ -3,6 +3,8 @@ package com.ohsh.website.qna;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,6 +28,10 @@ public class QnaService {
         return qnaRepository.findById(id)
                 .map(qna -> qna.getWriter().equals(loginId))
                 .orElse(false);
+    }
+
+    public Page<Qna> findAll(Pageable pageable) {
+        return qnaRepository.findAll(pageable);
     }
 
     public List<Qna> findAll() {

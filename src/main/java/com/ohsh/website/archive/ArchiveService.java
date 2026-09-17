@@ -3,6 +3,8 @@ package com.ohsh.website.archive;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,6 +28,10 @@ public class ArchiveService {
         return archiveRepository.findById(id)
                 .map(archive -> archive.getWriter() != null && archive.getWriter().equals(loginId))
                 .orElse(false);
+    }
+
+    public Page<Archive> findAll(Pageable pageable) {
+        return archiveRepository.findAll(pageable);
     }
 
     public List<Archive> findAll() {
