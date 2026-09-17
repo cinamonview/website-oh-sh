@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import './Qna.css'
 
 function QnaEdit() {
   const { id } = useParams()
@@ -116,7 +117,7 @@ function QnaEdit() {
 
   if (loading) {
     return (
-      <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
+      <div className="qna-form-page">
         <h1>Q&A 게시글 수정</h1>
         <p>Q&A 게시글을 불러오는 중...</p>
       </div>
@@ -128,10 +129,10 @@ function QnaEdit() {
   }
 
   return (
-    <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
-      <h1>Q&A 게시글 수정</h1>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '16px' }}>
+    <div className="qna-form-page">
+      <div className="qna-form-header"><h1>Q&A 게시글 수정</h1></div>
+      <form className="qna-form" onSubmit={handleSubmit}>
+        <div className="qna-form-field">
           <label htmlFor="title" style={{ display: 'block', marginBottom: '4px' }}>제목</label>
           <input
             id="title"
@@ -144,7 +145,7 @@ function QnaEdit() {
           />
         </div>
 
-        <div style={{ marginBottom: '16px' }}>
+        <div className="qna-form-field">
           <label htmlFor="content" style={{ display: 'block', marginBottom: '4px' }}>내용</label>
           <textarea
             id="content"
@@ -160,8 +161,8 @@ function QnaEdit() {
         {saving && <p>Q&A 게시글을 수정하는 중...</p>}
         {errorMessage && <p style={{ color: 'red', marginBottom: '16px' }}>{errorMessage}</p>}
 
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button type="submit" disabled={saving} style={{ padding: '8px 16px', cursor: saving ? 'not-allowed' : 'pointer' }}>
+        <div className="qna-form-actions">
+          <button type="submit" disabled={saving}>
             수정
           </button>
           <Link to={`/qna/${id}`}>취소</Link>

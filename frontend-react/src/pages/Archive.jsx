@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import './Archive.css'
 
 function Archive() {
   const [archives, setArchives] = useState([])
@@ -30,7 +31,7 @@ function Archive() {
 
   if (loading) {
     return (
-      <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
+      <div className="board-page">
         <h1>자료실</h1>
         <p>자료실 목록을 불러오는 중...</p>
       </div>
@@ -39,7 +40,7 @@ function Archive() {
 
   if (errorMessage) {
     return (
-      <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
+      <div className="board-page">
         <h1>자료실</h1>
         <p style={{ color: 'red' }}>{errorMessage}</p>
       </div>
@@ -47,17 +48,18 @@ function Archive() {
   }
 
   return (
-    <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+    <div className="board-page">
+      <div className="board-page-header">
         <h1 style={{ margin: 0 }}>자료실</h1>
-        <Link to="/archive/write">글쓰기</Link>
+        <Link className="board-action-link" to="/archive/write">글쓰기</Link>
       </div>
 
       {archives.length === 0 ? (
-        <p>자료실 게시글이 없습니다.</p>
+        <p className="board-empty">자료실 게시글이 없습니다.</p>
       ) : (
         <>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="board-table-wrap">
+            <table className="board-table">
             <thead>
               <tr>
                 <th style={{ padding: '10px', borderBottom: '1px solid var(--border)' }}>번호</th>
@@ -70,7 +72,7 @@ function Archive() {
               {archives.map((archive) => (
                 <tr key={archive.id}>
                   <td style={{ padding: '10px', borderBottom: '1px solid var(--border)' }}>{archive.id}</td>
-                  <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
+                  <td className="board-title-cell" style={{ padding: '10px', borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
                     <Link to={`/archive/${archive.id}`}>{archive.title}</Link>
                   </td>
                   <td style={{ padding: '10px', borderBottom: '1px solid var(--border)' }}>{archive.writer}</td>
@@ -78,9 +80,10 @@ function Archive() {
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </div>
 
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginTop: '20px', flexWrap: 'wrap' }}>
+          <div className="board-pagination">
             <button type="button" onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))} disabled={currentPage === 0}>
               이전
             </button>
@@ -90,10 +93,7 @@ function Archive() {
                 type="button"
                 onClick={() => setCurrentPage(pageNumber)}
                 disabled={currentPage === pageNumber}
-                style={{
-                  fontWeight: currentPage === pageNumber ? 'bold' : 'normal',
-                  backgroundColor: currentPage === pageNumber ? '#e6f0ff' : 'white',
-                }}
+                className={currentPage === pageNumber ? 'board-page-current' : ''}
               >
                 {pageNumber + 1}
               </button>

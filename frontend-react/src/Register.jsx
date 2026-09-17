@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import './Member.css'
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -244,13 +245,14 @@ function Register() {
   }
 
   return (
-    <div style={{ maxWidth: '400px', margin: '20px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
+    <div className="member-page">
+      <div className="member-card">
       <h2>회원가입</h2>
-      <form onSubmit={handleSubmit}>
+      <form className="member-form" onSubmit={handleSubmit}>
         {/* 아이디 */}
-        <div style={{ marginBottom: '12px' }}>
+        <div className="member-field">
           <label style={{ display: 'block', marginBottom: '4px' }}>아이디:</label>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div className="member-inline-field">
             <input
               type="text"
               name="loginId"
@@ -264,14 +266,14 @@ function Register() {
             </button>
           </div>
           {idMessage && (
-            <p style={{ margin: '4px 0 0', fontSize: '13px', color: isIdValid ? 'green' : 'red' }}>
+            <p className={`member-message ${isIdValid ? 'member-message-success' : 'member-message-error'}`}>
               {idMessage}
             </p>
           )}
         </div>
 
         {/* 비밀번호 */}
-        <div style={{ marginBottom: '12px' }}>
+        <div className="member-field">
           <label style={{ display: 'block', marginBottom: '4px' }}>비밀번호:</label>
           <input
             type="password"
@@ -284,7 +286,7 @@ function Register() {
         </div>
 
         {/* 비밀번호 확인 */}
-        <div style={{ marginBottom: '12px' }}>
+        <div className="member-field">
           <label style={{ display: 'block', marginBottom: '4px' }}>비밀번호 확인:</label>
           <input
             type="password"
@@ -302,7 +304,7 @@ function Register() {
         </div>
 
         {/* 이름 */}
-        <div style={{ marginBottom: '12px' }}>
+        <div className="member-field">
           <label style={{ display: 'block', marginBottom: '4px' }}>이름:</label>
           <input
             type="text"
@@ -315,9 +317,9 @@ function Register() {
         </div>
 
         {/* 이메일 + 인증 */}
-        <div style={{ marginBottom: '12px' }}>
+        <div className="member-field">
           <label style={{ display: 'block', marginBottom: '4px' }}>이메일:</label>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div className="member-inline-field">
             <input
               type="email"
               name="email"
@@ -337,7 +339,7 @@ function Register() {
             </button>
           </div>
           {emailCodeSent && !isEmailVerified && (
-            <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+            <div className="member-inline-field">
               <input
                 type="text"
                 placeholder="인증번호 6자리"
@@ -357,14 +359,14 @@ function Register() {
             </div>
           )}
           {emailMessage && (
-            <p style={{ margin: '4px 0 0', fontSize: '13px', color: isEmailMessageValid ? 'green' : 'red' }}>
+            <p className={`member-message ${isEmailMessageValid ? 'member-message-success' : 'member-message-error'}`}>
               {emailMessage}
             </p>
           )}
         </div>
 
         {/* 전화번호 */}
-        <div style={{ marginBottom: '16px' }}>
+        <div className="member-field">
           <label style={{ display: 'block', marginBottom: '4px' }}>전화번호:</label>
           <input
             type="text"
@@ -379,6 +381,7 @@ function Register() {
 
         {/* 회원가입 버튼 */}
         <button
+          className="member-button member-button-full"
           type="submit"
           style={{ width: '100%', padding: '10px', fontSize: '16px', cursor: 'pointer' }}
         >
@@ -387,11 +390,12 @@ function Register() {
 
         {/* 제출 결과 안내 */}
         {submitMessage && (
-          <p style={{ marginTop: '12px', textAlign: 'center', fontWeight: 'bold', color: submitMessage.includes('완료') ? 'green' : 'red' }}>
+          <p className={`member-submit-message ${submitMessage.includes('완료') ? 'member-message-success' : 'member-message-error'}`}>
             {submitMessage}
           </p>
         )}
       </form>
+      </div>
     </div>
   )
 }

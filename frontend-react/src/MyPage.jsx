@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import './Member.css'
 
 function MyPage() {
   const [member, setMember] = useState(null)
@@ -194,31 +195,36 @@ function MyPage() {
 
   if (loading) {
     return (
-      <div style={{ maxWidth: '500px', margin: '20px auto', padding: '20px' }}>
+      <div className="member-page">
+        <div className="member-card">
         <h1>내 정보</h1>
         <p>회원 정보를 불러오는 중...</p>
+        </div>
       </div>
     )
   }
 
   if (errorMessage) {
     return (
-      <div style={{ maxWidth: '500px', margin: '20px auto', padding: '20px' }}>
+      <div className="member-page">
+        <div className="member-card">
         <h1>내 정보</h1>
         <p style={{ color: 'red' }}>{errorMessage}</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div style={{ maxWidth: '500px', margin: '20px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
+    <div className="member-page member-profile">
+      <div className="member-card">
       <h1>내 정보</h1>
 
       {isChangingPassword ? (
-        <form onSubmit={handleSavePassword}>
+        <form className="member-form" onSubmit={handleSavePassword}>
           <h2 style={{ marginTop: '0', marginBottom: '16px', fontSize: '1.1rem' }}>비밀번호 변경</h2>
 
-          <div style={{ marginBottom: '12px' }}>
+          <div className="member-field">
             <label style={{ display: 'block', marginBottom: '4px' }}><strong>현재 비밀번호</strong></label>
             <input
               type="password"
@@ -230,7 +236,7 @@ function MyPage() {
             />
           </div>
 
-          <div style={{ marginBottom: '12px' }}>
+          <div className="member-field">
             <label style={{ display: 'block', marginBottom: '4px' }}><strong>새 비밀번호</strong></label>
             <input
               type="password"
@@ -242,7 +248,7 @@ function MyPage() {
             />
           </div>
 
-          <div style={{ marginBottom: '16px' }}>
+          <div className="member-field">
             <label style={{ display: 'block', marginBottom: '4px' }}><strong>새 비밀번호 확인</strong></label>
             <input
               type="password"
@@ -258,11 +264,11 @@ function MyPage() {
             <p style={{ color: 'red', marginBottom: '12px' }}>{pwError}</p>
           )}
 
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div className="member-form-actions">
             <button
               type="submit"
               disabled={pwSaving}
-              style={{ padding: '8px 16px', cursor: pwSaving ? 'not-allowed' : 'pointer' }}
+              className="member-button"
             >
               {pwSaving ? '변경 중...' : '변경하기'}
             </button>
@@ -270,17 +276,17 @@ function MyPage() {
               type="button"
               onClick={handleCancelChangePassword}
               disabled={pwSaving}
-              style={{ padding: '8px 16px', cursor: pwSaving ? 'not-allowed' : 'pointer' }}
+              className="member-button member-button-secondary"
             >
               취소
             </button>
           </div>
         </form>
       ) : isEditing ? (
-        <form onSubmit={handleSave}>
+        <form className="member-form" onSubmit={handleSave}>
           <p><strong>아이디:</strong> {member?.loginId}</p>
 
-          <div style={{ marginBottom: '12px' }}>
+          <div className="member-field">
             <label style={{ display: 'block', marginBottom: '4px' }}><strong>이름:</strong></label>
             <input
               type="text"
@@ -292,7 +298,7 @@ function MyPage() {
             />
           </div>
 
-          <div style={{ marginBottom: '12px' }}>
+          <div className="member-field">
             <label style={{ display: 'block', marginBottom: '4px' }}><strong>이메일:</strong></label>
             <input
               type="email"
@@ -304,7 +310,7 @@ function MyPage() {
             />
           </div>
 
-          <div style={{ marginBottom: '16px' }}>
+          <div className="member-field">
             <label style={{ display: 'block', marginBottom: '4px' }}><strong>전화번호:</strong></label>
             <input
               type="text"
@@ -320,11 +326,11 @@ function MyPage() {
             <p style={{ color: 'red', marginBottom: '12px' }}>{updateError}</p>
           )}
 
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div className="member-form-actions">
             <button
               type="submit"
               disabled={saving}
-              style={{ padding: '8px 16px', cursor: saving ? 'not-allowed' : 'pointer' }}
+              className="member-button"
             >
               {saving ? '저장 중...' : '저장'}
             </button>
@@ -332,7 +338,7 @@ function MyPage() {
               type="button"
               onClick={handleCancelEdit}
               disabled={saving}
-              style={{ padding: '8px 16px', cursor: saving ? 'not-allowed' : 'pointer' }}
+              className="member-button member-button-secondary"
             >
               취소
             </button>
@@ -340,33 +346,36 @@ function MyPage() {
         </form>
       ) : (
         <>
-          <p><strong>아이디:</strong> {member?.loginId}</p>
-          <p><strong>이름:</strong> {member?.name}</p>
-          <p><strong>이메일:</strong> {member?.email}</p>
-          <p><strong>전화번호:</strong> {member?.phone}</p>
-          <p><strong>가입일:</strong> {member?.createdAt ? new Date(member.createdAt).toLocaleString() : '-'}</p>
-          <p><strong>수정일:</strong> {member?.updatedAt ? new Date(member.updatedAt).toLocaleString() : '-'}</p>
+          <div className="member-profile-list">
+            <p className="member-profile-row"><strong>아이디:</strong> <span>{member?.loginId}</span></p>
+            <p className="member-profile-row"><strong>이름:</strong> <span>{member?.name}</span></p>
+            <p className="member-profile-row"><strong>이메일:</strong> <span>{member?.email}</span></p>
+            <p className="member-profile-row"><strong>전화번호:</strong> <span>{member?.phone}</span></p>
+            <p className="member-profile-row"><strong>가입일:</strong> <span>{member?.createdAt ? new Date(member.createdAt).toLocaleString() : '-'}</span></p>
+            <p className="member-profile-row"><strong>수정일:</strong> <span>{member?.updatedAt ? new Date(member.updatedAt).toLocaleString() : '-'}</span></p>
+          </div>
 
           {pwSuccess && (
             <p style={{ color: 'green', marginTop: '8px' }}>{pwSuccess}</p>
           )}
 
-          <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+          <div className="member-profile-actions">
             <button
               onClick={handleStartEdit}
-              style={{ padding: '8px 16px', cursor: 'pointer' }}
+              className="member-button"
             >
               회원정보 수정
             </button>
             <button
               onClick={handleStartChangePassword}
-              style={{ padding: '8px 16px', cursor: 'pointer' }}
+              className="member-button member-button-secondary"
             >
               비밀번호 변경
             </button>
           </div>
         </>
       )}
+      </div>
     </div>
   )
 }

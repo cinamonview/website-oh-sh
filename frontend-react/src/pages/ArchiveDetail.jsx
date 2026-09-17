@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import './Archive.css'
 
 const IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'])
 const VIDEO_EXTENSIONS = new Set(['mp4', 'webm', 'ogg', 'mov', 'avi'])
@@ -162,7 +163,7 @@ function ArchiveDetail() {
 
   if (loading) {
     return (
-      <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
+      <div className="archive-detail-page">
         <h1>자료실 게시글 상세</h1>
         <p>자료실 게시글을 불러오는 중...</p>
       </div>
@@ -171,7 +172,7 @@ function ArchiveDetail() {
 
   if (errorMessage || !archive) {
     return (
-      <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
+      <div className="archive-detail-page">
         <h1>자료실 게시글 상세</h1>
         <p style={{ color: 'red' }}>{errorMessage || '자료실 게시글을 찾을 수 없습니다.'}</p>
         <Link to="/archive">목록으로</Link>
@@ -180,14 +181,17 @@ function ArchiveDetail() {
   }
 
   return (
-    <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
-      <h1>{archive.title}</h1>
-      <div style={{ marginBottom: '20px' }}>
-        <p><strong>작성자:</strong> {archive.writer}</p>
-        <p><strong>작성일:</strong> {archive.createdAt}</p>
-        <p><strong>수정일:</strong> {archive.updatedAt}</p>
-        <p><strong>조회수:</strong> {archive.viewCount ?? 0}</p>
+    <div className="archive-detail-page">
+      <div className="archive-detail-header">
+        <h1>{archive.title}</h1>
+        <div className="archive-detail-meta">
+          <span><strong>작성자:</strong> {archive.writer}</span>
+          <span><strong>작성일:</strong> {archive.createdAt}</span>
+          <span><strong>수정일:</strong> {archive.updatedAt}</span>
+          <span><strong>조회수:</strong> {archive.viewCount ?? 0}</span>
+        </div>
         <button
+          className="archive-like-button"
           type="button"
           onClick={handleLike}
           style={{
@@ -199,31 +203,32 @@ function ArchiveDetail() {
           ❤️ 좋아요 {archive.likeCount ?? 0}
         </button>
       </div>
-      <div style={{ padding: '20px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', whiteSpace: 'pre-wrap' }}>
+      <div className="archive-content">
         {archive.content}
       </div>
       {attachments.length > 0 && (
-        <div style={{ marginTop: '20px' }}>
-          <strong>📎 첨부파일</strong>
+        <div className="archive-attachments">
+          <strong className="archive-attachments-title">📎 첨부파일</strong>
           {attachments.map((attachment) => (
-            <div key={attachment.id} style={{ marginTop: '8px' }}>
+            <div className="archive-attachment" key={attachment.id}>
               {getAttachmentType(attachment.originalFileName) === 'image' && (
                 <img
+                  className="archive-preview-image"
                   src={`http://localhost:8080/api/archives/files/${attachment.id}/preview`}
                   alt={attachment.originalFileName || '첨부 이미지'}
-                  style={{ display: 'block', maxWidth: '100%' }}
                 />
               )}
               {getAttachmentType(attachment.originalFileName) === 'video' && (
                 <video
+                  className="archive-preview-video"
                   controls
                   preload="metadata"
                   src={`http://localhost:8080/api/archives/files/${attachment.id}/preview`}
-                  style={{ display: 'block', maxWidth: '100%' }}
                 />
               )}
               {getAttachmentType(attachment.originalFileName) === 'audio' && (
                 <audio
+                  className="archive-preview-audio"
                   controls
                   src={`http://localhost:8080/api/archives/files/${attachment.id}/preview`}
                 />
@@ -231,15 +236,16 @@ function ArchiveDetail() {
               {getAttachmentType(attachment.originalFileName) === 'file' ? (
                 <>
                   <a
+                    className="archive-download-link"
                     href={`http://localhost:8080/api/archives/files/${attachment.id}/download`}
                     download
                   >
                     {attachment.originalFileName}
-                  </a>{' '}
-                  ({attachment.fileSize} bytes)
+                  </a>
+                  <span className="archive-attachment-name">({attachment.fileSize} bytes)</span>
                 </>
               ) : (
-                <div>
+                <div className="archive-attachment-name">
                   {attachment.originalFileName} ({attachment.fileSize} bytes)
                 </div>
               )}
@@ -247,11 +253,11 @@ function ArchiveDetail() {
           ))}
         </div>
       )}
-      <div style={{ marginTop: '20px' }}>
+      <div className="archive-detail-actions">
         {loginId === archive.writer && (
           <>
-            <Link to={`/archive/${id}/edit`} style={{ marginRight: '10px' }}>수정</Link>
-            <button type="button" onClick={handleDelete} disabled={deleting} style={{ marginRight: '10px', padding: '4px 8px', cursor: deleting ? 'not-allowed' : 'pointer' }}>
+            <Link to={`/archive/${id}/edit`}>수정</Link>
+            <button className="archive-delete-button" type="button" onClick={handleDelete} disabled={deleting}>
               {deleting ? '삭제 중...' : '삭제'}
             </button>
           </>

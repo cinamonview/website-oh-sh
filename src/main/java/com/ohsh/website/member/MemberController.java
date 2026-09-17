@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
+    private final EmailService emailService;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, EmailService emailService) {
         this.memberService = memberService;
+        this.emailService = emailService;
     }
 
     @PostMapping("/api/members")
@@ -41,6 +43,35 @@ public class MemberController {
     @GetMapping("/api/members/check-login-id")
     public boolean checkLoginId(@RequestParam("loginId") String loginId) {
         return memberService.checkLoginId(loginId);
+    }
+
+    @PostMapping("/api/members/password/reset")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> passwordResetRequest) {
+        String loginId = passwordResetRequest.get("loginId");
+        String email = passwordResetRequest.get("email");
+
+        if (loginId == null || loginId.isBlank() || email == null || email.isBlank()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, "message", "아이디와 이메일을 입력해주세요."));
+        }
+
+        Optional<String> temporaryPassword = memberService.resetPassword(loginId, email);
+        if (temporaryPassword.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, "message", "아이디와 이메일이 일치하는 회원을 찾을 수 없습니다."));
+        }
+
+        try {
+            emailService.sendTemporaryPassword(email, temporaryPassword.get());
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "message", "임시 비밀번호 이메일 발송에 실패했습니다."));
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "임시 비밀번호가 이메일로 발송되었습니다."));
     }
 
     @PostMapping("/api/members/login")

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import './Qna.css'
 
 function QnaWrite() {
   const navigate = useNavigate()
@@ -78,7 +79,7 @@ function QnaWrite() {
 
   if (loading) {
     return (
-      <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
+      <div className="qna-form-page">
         <h1>Q&A 게시글 작성</h1>
         <p>로그인 상태를 확인하는 중...</p>
       </div>
@@ -86,10 +87,10 @@ function QnaWrite() {
   }
 
   return (
-    <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
-      <h1>Q&A 게시글 작성</h1>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '16px' }}>
+    <div className="qna-form-page">
+      <div className="qna-form-header"><h1>Q&A 게시글 작성</h1></div>
+      <form className="qna-form" onSubmit={handleSubmit}>
+        <div className="qna-form-field">
           <label htmlFor="title" style={{ display: 'block', marginBottom: '4px' }}>제목</label>
           <input
             id="title"
@@ -102,7 +103,7 @@ function QnaWrite() {
           />
         </div>
 
-        <div style={{ marginBottom: '16px' }}>
+        <div className="qna-form-field">
           <label htmlFor="content" style={{ display: 'block', marginBottom: '4px' }}>내용</label>
           <textarea
             id="content"
@@ -118,8 +119,8 @@ function QnaWrite() {
         {saving && <p>Q&A 게시글을 등록하는 중...</p>}
         {errorMessage && <p style={{ color: 'red', marginBottom: '16px' }}>{errorMessage}</p>}
 
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button type="submit" disabled={saving} style={{ padding: '8px 16px', cursor: saving ? 'not-allowed' : 'pointer' }}>
+        <div className="qna-form-actions">
+          <button type="submit" disabled={saving}>
             등록
           </button>
           <Link to="/qna">목록으로</Link>

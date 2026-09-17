@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import './Board.css'
 
 function Board() {
   const [boards, setBoards] = useState([])
@@ -30,7 +31,7 @@ function Board() {
 
   if (loading) {
     return (
-      <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
+      <div className="board-page">
         <h1>자유게시판</h1>
         <p>게시글을 불러오는 중...</p>
       </div>
@@ -39,7 +40,7 @@ function Board() {
 
   if (errorMessage) {
     return (
-      <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
+      <div className="board-page">
         <h1>자유게시판</h1>
         <p style={{ color: 'red' }}>{errorMessage}</p>
       </div>
@@ -47,17 +48,18 @@ function Board() {
   }
 
   return (
-    <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+    <div className="board-page">
+      <div className="board-page-header">
         <h1 style={{ margin: 0 }}>자유게시판</h1>
-        <Link to="/board/write">글쓰기</Link>
+        <Link className="board-action-link" to="/board/write">글쓰기</Link>
       </div>
 
       {boards.length === 0 ? (
-        <p>게시글이 없습니다.</p>
+        <p className="board-empty">게시글이 없습니다.</p>
       ) : (
         <>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="board-table-wrap">
+            <table className="board-table">
             <thead>
               <tr>
                 <th style={{ padding: '10px', borderBottom: '1px solid var(--border)' }}>번호</th>
@@ -70,7 +72,7 @@ function Board() {
               {boards.map((board) => (
                 <tr key={board.id}>
                   <td style={{ padding: '10px', borderBottom: '1px solid var(--border)' }}>{board.id}</td>
-                  <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
+                  <td className="board-title-cell" style={{ padding: '10px', borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
                     <Link to={`/board/${board.id}`}>{board.title}</Link>
                   </td>
                   <td style={{ padding: '10px', borderBottom: '1px solid var(--border)' }}>{board.writer}</td>
@@ -78,9 +80,10 @@ function Board() {
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </div>
 
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginTop: '20px', flexWrap: 'wrap' }}>
+          <div className="board-pagination">
             <button type="button" onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))} disabled={currentPage === 0}>
               이전
             </button>
@@ -90,10 +93,7 @@ function Board() {
                 type="button"
                 onClick={() => setCurrentPage(pageNumber)}
                 disabled={currentPage === pageNumber}
-                style={{
-                  fontWeight: currentPage === pageNumber ? 'bold' : 'normal',
-                  backgroundColor: currentPage === pageNumber ? '#e6f0ff' : 'white',
-                }}
+                className={currentPage === pageNumber ? 'board-page-current' : ''}
               >
                 {pageNumber + 1}
               </button>

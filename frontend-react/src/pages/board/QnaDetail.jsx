@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import './Qna.css'
 
 function formatDate(dateValue) {
   if (!dateValue) {
@@ -307,7 +308,7 @@ function QnaDetail() {
 
   if (loading) {
     return (
-      <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
+      <div className="qna-detail-page">
         <h1>Q&A 게시글 상세</h1>
         <p>Q&A 게시글을 불러오는 중...</p>
       </div>
@@ -316,7 +317,7 @@ function QnaDetail() {
 
   if (errorMessage || !qna) {
     return (
-      <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
+      <div className="qna-detail-page">
         <h1>Q&A 게시글 상세</h1>
         <p style={{ color: 'red' }}>{errorMessage || 'Q&A 게시글을 찾을 수 없습니다.'}</p>
         <Link to="/qna">목록으로</Link>
@@ -325,14 +326,17 @@ function QnaDetail() {
   }
 
   return (
-    <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
-      <h1>{qna.title}</h1>
-      <div style={{ marginBottom: '20px' }}>
-        <p><strong>작성자:</strong> {qna.writer}</p>
-        <p><strong>작성일:</strong> {formatDate(qna.createdAt)}</p>
-        <p><strong>수정일:</strong> {formatDate(qna.updatedAt)}</p>
-        <p><strong>조회수:</strong> {qna.viewCount ?? 0}</p>
+    <div className="qna-detail-page">
+      <div className="qna-detail-header">
+        <h1>{qna.title}</h1>
+        <div className="qna-detail-meta">
+          <span><strong>작성자:</strong> {qna.writer}</span>
+          <span><strong>작성일:</strong> {formatDate(qna.createdAt)}</span>
+          <span><strong>수정일:</strong> {formatDate(qna.updatedAt)}</span>
+          <span><strong>조회수:</strong> {qna.viewCount ?? 0}</span>
+        </div>
         <button
+          className="qna-like-button"
           type="button"
           onClick={handleLike}
           style={{
@@ -344,14 +348,14 @@ function QnaDetail() {
           ❤️ 좋아요 {qna.likeCount ?? 0}
         </button>
       </div>
-      <div style={{ padding: '20px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', whiteSpace: 'pre-wrap' }}>
+      <div className="qna-content">
         {qna.content}
       </div>
-      <div style={{ marginTop: '20px' }}>
+      <div className="qna-detail-actions">
         {loginId === qna.writer && (
           <>
-            <Link to={`/qna/${id}/edit`} style={{ marginRight: '10px' }}>수정</Link>
-            <button type="button" onClick={handleDelete} disabled={deleting} style={{ marginRight: '10px', padding: '4px 8px', cursor: deleting ? 'not-allowed' : 'pointer' }}>
+            <Link to={`/qna/${id}/edit`}>수정</Link>
+            <button type="button" onClick={handleDelete} disabled={deleting}>
               {deleting ? '삭제 중...' : '삭제'}
             </button>
           </>
@@ -361,22 +365,22 @@ function QnaDetail() {
         <Link to="/qna">목록으로</Link>
       </div>
 
-      <section style={{ marginTop: '32px' }}>
+      <section className="qna-comments">
         <h2>댓글</h2>
 
         {commentsLoading ? (
           <p>댓글을 불러오는 중...</p>
         ) : commentError && comments.length === 0 ? (
-          <p style={{ color: 'red' }}>{commentError}</p>
+          <p className="qna-error">{commentError}</p>
         ) : comments.length === 0 ? (
           <p>등록된 댓글이 없습니다.</p>
         ) : (
           <div>
             {comments.map((comment) => (
-              <div key={comment.id} style={{ padding: '12px 0', borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
-                <p><strong>{comment.writer}</strong> · {formatDate(comment.createdAt)}</p>
+              <div className="qna-comment" key={comment.id}>
+                <p className="qna-comment-meta"><strong>{comment.writer}</strong> · {formatDate(comment.createdAt)}</p>
                 {editingCommentId === comment.id ? (
-                  <div style={{ marginTop: '8px' }}>
+                  <div className="qna-comment-edit">
                     <textarea
                       value={editingContent}
                       onChange={(e) => setEditingContent(e.target.value)}
@@ -384,12 +388,11 @@ function QnaDetail() {
                       rows={3}
                       style={{ width: '100%', padding: '8px', boxSizing: 'border-box', resize: 'vertical' }}
                     />
-                    <div style={{ marginTop: '8px' }}>
+                    <div className="qna-comment-actions">
                       <button
                         type="button"
                         onClick={() => handleCommentUpdate(comment.id)}
                         disabled={commentActionId === comment.id}
-                        style={{ marginRight: '8px', padding: '4px 8px' }}
                       >
                         {commentActionId === comment.id ? '저장 중...' : '저장'}
                       </button>
@@ -400,22 +403,20 @@ function QnaDetail() {
                           setEditingContent('')
                         }}
                         disabled={commentActionId === comment.id}
-                        style={{ padding: '4px 8px' }}
                       >
                         취소
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <p style={{ marginTop: '8px', whiteSpace: 'pre-wrap' }}>{comment.content}</p>
+                  <p className="qna-comment-content">{comment.content}</p>
                 )}
                 {loginId === comment.writer && editingCommentId !== comment.id && (
-                  <div style={{ marginTop: '8px' }}>
+                  <div className="qna-comment-actions">
                     <button
                       type="button"
                       onClick={() => handleCommentEdit(comment)}
                       disabled={commentActionId === comment.id}
-                      style={{ marginRight: '8px', padding: '4px 8px' }}
                     >
                       수정
                     </button>
@@ -423,7 +424,6 @@ function QnaDetail() {
                       type="button"
                       onClick={() => handleCommentDelete(comment.id)}
                       disabled={commentActionId === comment.id}
-                      style={{ padding: '4px 8px' }}
                     >
                       {commentActionId === comment.id ? '처리 중...' : '삭제'}
                     </button>
@@ -434,10 +434,10 @@ function QnaDetail() {
           </div>
         )}
 
-        {commentError && comments.length > 0 && <p style={{ color: 'red', marginTop: '10px' }}>{commentError}</p>}
+        {commentError && comments.length > 0 && <p className="qna-error">{commentError}</p>}
 
         {loginId ? (
-          <form onSubmit={handleCommentSubmit} style={{ marginTop: '20px' }}>
+          <form className="qna-comment-form" onSubmit={handleCommentSubmit}>
             <textarea
               value={commentContent}
               onChange={(e) => setCommentContent(e.target.value)}
@@ -446,7 +446,7 @@ function QnaDetail() {
               rows={4}
               style={{ width: '100%', padding: '8px', boxSizing: 'border-box', resize: 'vertical' }}
             />
-            <button type="submit" disabled={commentSubmitting} style={{ marginTop: '8px', padding: '8px 16px' }}>
+            <button type="submit" disabled={commentSubmitting}>
               {commentSubmitting ? '등록 중...' : '댓글 등록'}
             </button>
           </form>

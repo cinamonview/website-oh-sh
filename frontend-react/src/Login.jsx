@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import './Member.css'
 
 const SAVED_LOGIN_ID_COOKIE = 'savedLoginId'
 const SAVED_LOGIN_ID_EXPIRE_DAYS = 30
@@ -85,11 +86,12 @@ function Login({ onLogin }) {
   }
 
   return (
-    <div style={{ maxWidth: '400px', margin: '20px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
+    <div className="member-page">
+      <div className="member-card">
       <h2>로그인</h2>
-      <form onSubmit={handleSubmit}>
+      <form className="member-form" onSubmit={handleSubmit}>
         {/* 아이디 */}
-        <div style={{ marginBottom: '12px' }}>
+        <div className="member-field">
           <label style={{ display: 'block', marginBottom: '4px' }}>아이디:</label>
           <input
             type="text"
@@ -102,7 +104,7 @@ function Login({ onLogin }) {
         </div>
 
         {/* 비밀번호 */}
-        <div style={{ marginBottom: '16px' }}>
+        <div className="member-field">
           <label style={{ display: 'block', marginBottom: '4px' }}>비밀번호:</label>
           <input
             type="password"
@@ -114,8 +116,8 @@ function Login({ onLogin }) {
           />
         </div>
 
-        <div style={{ marginBottom: '16px' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="member-field">
+          <label className="member-checkbox-label">
             <input
               type="checkbox"
               checked={rememberLoginId}
@@ -127,26 +129,27 @@ function Login({ onLogin }) {
 
         {/* 로그인 버튼 */}
         <button
+          className="member-button member-button-full"
           type="submit"
           style={{ width: '100%', padding: '10px', fontSize: '16px', cursor: 'pointer' }}
         >
           로그인
         </button>
 
+        <div className="member-links">
+          <Link to="/forgot-password">비밀번호 찾기</Link>
+        </div>
+
         {/* 로그인 결과 안내 메시지 */}
         {result && (
           <p
-            style={{
-              marginTop: '15px',
-              textAlign: 'center',
-              fontWeight: 'bold',
-              color: result.success ? 'green' : 'red',
-            }}
+            className={`member-submit-message ${result.success ? 'member-message-success' : 'member-message-error'}`}
           >
             {result.message}
           </p>
         )}
       </form>
+      </div>
     </div>
   )
 }

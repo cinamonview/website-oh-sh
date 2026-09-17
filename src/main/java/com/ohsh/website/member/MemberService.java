@@ -1,11 +1,17 @@
 package com.ohsh.website.member;
 
+import java.security.SecureRandom;
 import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service 
 public class MemberService {
+
+    private static final String TEMPORARY_PASSWORD_CHARACTERS =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final int TEMPORARY_PASSWORD_LENGTH = 12;
+    private final SecureRandom secureRandom = new SecureRandom();
     
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
@@ -22,6 +28,17 @@ public class MemberService {
 
     public boolean checkLoginId(String loginId) {
         return memberRepository.existsByLoginId(loginId);
+    }
+
+    public Optional<String> resetPassword(String loginId, String email) {
+        return memberRepository.findByLoginId(loginId)
+                .filter(member -> member.getEmail().equals(email))
+                .map(member -> {
+                    String temporaryPassword = generateTemporaryPassword();
+                    member.setPassword(passwordEncoder.encode(temporaryPassword));
+                    memberRepository.save(member);
+                    return temporaryPassword;
+                });
     }
 
     public boolean login(String loginId, String rawPassword) {
@@ -68,6 +85,15 @@ public class MemberService {
         memberRepository.save(member);
 
         return true;
+    }
+
+    private String generateTemporaryPassword() {
+        StringBuilder temporaryPassword = new StringBuilder(TEMPORARY_PASSWORD_LENGTH);
+        for (int index = 0; index < TEMPORARY_PASSWORD_LENGTH; index++) {
+            int characterIndex = secureRandom.nextInt(TEMPORARY_PASSWORD_CHARACTERS.length());
+            temporaryPassword.append(TEMPORARY_PASSWORD_CHARACTERS.charAt(characterIndex));
+        }
+        return temporaryPassword.toString();
     }
     /*
     Member.java

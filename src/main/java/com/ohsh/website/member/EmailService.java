@@ -26,4 +26,18 @@ public class EmailService {
         );
         mailSender.send(message);
     }
+
+    public void sendTemporaryPassword(String toEmail, String temporaryPassword) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject("[website-oh-sh] 임시 비밀번호 안내");
+        message.setText(
+            "안녕하세요.\n\n" +
+            "비밀번호 찾기 요청에 따라 임시 비밀번호를 발급해 드립니다.\n\n" +
+            "임시 비밀번호: " + temporaryPassword + "\n\n" +
+            "임시 비밀번호로 로그인한 후 MyPage에서 새로운 비밀번호로 변경해 주세요.\n\n" +
+            "본인이 요청하지 않은 경우 비밀번호를 변경해 주세요."
+        );
+        mailSender.send(message);
+    }
 }

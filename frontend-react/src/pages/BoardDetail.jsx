@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import './Board.css'
 
 function BoardDetail() {
   const { id } = useParams()
@@ -114,7 +115,7 @@ function BoardDetail() {
 
   if (loading) {
     return (
-      <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
+      <div className="board-detail-page">
         <h1>게시글 상세</h1>
         <p>게시글을 불러오는 중...</p>
       </div>
@@ -123,7 +124,7 @@ function BoardDetail() {
 
   if (errorMessage || !board) {
     return (
-      <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
+      <div className="board-detail-page">
         <h1>게시글 상세</h1>
         <p style={{ color: 'red' }}>{errorMessage || '게시글을 찾을 수 없습니다.'}</p>
         <Link to="/board">목록으로</Link>
@@ -132,14 +133,17 @@ function BoardDetail() {
   }
 
   return (
-    <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
-      <h1>{board.title}</h1>
-      <div style={{ marginBottom: '20px' }}>
-        <p><strong>작성자:</strong> {board.writer}</p>
-        <p><strong>작성일:</strong> {board.createdAt}</p>
-        <p><strong>수정일:</strong> {board.updatedAt}</p>
-        <p><strong>조회수:</strong> {board.viewCount ?? 0}</p>
+    <div className="board-detail-page">
+      <div className="board-detail-header">
+        <h1>{board.title}</h1>
+        <div className="board-detail-meta">
+          <span><strong>작성자:</strong> {board.writer}</span>
+          <span><strong>작성일:</strong> {board.createdAt}</span>
+          <span><strong>수정일:</strong> {board.updatedAt}</span>
+          <span><strong>조회수:</strong> {board.viewCount ?? 0}</span>
+        </div>
         <button
+          className="board-like-button"
           type="button"
           onClick={handleLike}
           style={{
@@ -151,19 +155,19 @@ function BoardDetail() {
           ❤️ 좋아요 {board.likeCount ?? 0}
         </button>
       </div>
-      <div style={{ padding: '20px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', whiteSpace: 'pre-wrap' }}>
+      <div className="board-content">
         {board.content}
       </div>
-      <div style={{ marginTop: '20px' }}>
+      <div className="board-detail-actions">
         {loginId === board.writer && (
           <>
-            <Link to={`/board/${id}/edit`} style={{ marginRight: '10px' }}>수정</Link>
-            <button type="button" onClick={handleDelete} disabled={deleting} style={{ marginRight: '10px', padding: '4px 8px', cursor: deleting ? 'not-allowed' : 'pointer' }}>
+            <Link className="board-action-link" to={`/board/${id}/edit`}>수정</Link>
+            <button className="board-delete-button" type="button" onClick={handleDelete} disabled={deleting}>
               {deleting ? '삭제 중...' : '삭제'}
             </button>
           </>
         )}
-        <Link to="/board">목록으로</Link>
+        <Link className="board-list-link" to="/board">목록으로</Link>
       </div>
     </div>
   )

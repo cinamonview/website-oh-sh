@@ -1,0 +1,310 @@
+@import '../Board.css';
+
+.qna-detail-page {
+  width: min(900px, 100%);
+  margin: 0 auto;
+  padding: 36px 20px 56px;
+  box-sizing: border-box;
+}
+
+.qna-detail-page h1,
+.qna-form-page h1 {
+  margin: 0;
+  font-size: clamp(30px, 4vw, 44px);
+  letter-spacing: -1px;
+}
+
+.qna-detail-header,
+.qna-form-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.qna-detail-header {
+  display: block;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+}
+
+.qna-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 14px;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.qna-detail-meta strong,
+.qna-comment-meta strong {
+  color: var(--text-h);
+}
+
+.qna-content {
+  min-height: 180px;
+  padding: 28px 4px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-h);
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.qna-detail-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.qna-detail-actions a,
+.qna-detail-actions button {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text-h);
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.qna-detail-actions a:first-child {
+  border-color: var(--accent-border);
+  background: var(--accent);
+  color: #fff;
+}
+
+.qna-detail-actions a:hover,
+.qna-detail-actions button:hover:not(:disabled) {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--accent-dark);
+}
+
+.qna-detail-actions a:first-child:hover {
+  background: var(--accent-dark);
+  color: #fff;
+}
+
+.qna-like-button {
+  margin-top: 18px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--accent-border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--accent-dark);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.qna-like-button:hover {
+  background: var(--accent-bg);
+}
+
+.qna-comments {
+  margin-top: 36px;
+  padding: 26px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.qna-comments h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.qna-comment {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.qna-comment:first-child {
+  padding-top: 0;
+}
+
+.qna-comment:last-child {
+  border-bottom: 0;
+}
+
+.qna-comment-meta {
+  color: var(--text);
+  font-size: 13px;
+}
+
+.qna-comment-content {
+  margin-top: 9px;
+  color: var(--text-h);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.qna-comment-edit {
+  margin-top: 10px;
+}
+
+.qna-comment-edit textarea,
+.qna-comment-form textarea {
+  width: 100%;
+  padding: 11px 12px;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  resize: vertical;
+}
+
+.qna-comment-edit textarea {
+  min-height: 96px;
+}
+
+.qna-comment-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.qna-comment-actions button,
+.qna-comment-form button {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text-h);
+  cursor: pointer;
+}
+
+.qna-comment-actions button:hover:not(:disabled),
+.qna-comment-form button:hover:not(:disabled) {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--accent-dark);
+}
+
+.qna-comment-form {
+  margin-top: 24px;
+}
+
+.qna-comment-form textarea {
+  min-height: 110px;
+}
+
+.qna-comment-form button {
+  margin-top: 10px;
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+.qna-comment-form button:hover:not(:disabled) {
+  background: var(--accent-dark);
+  color: #fff;
+}
+
+.qna-error {
+  color: #a33a42;
+}
+
+.qna-form-page {
+  width: min(900px, 100%);
+  margin: 0 auto;
+  padding: 36px 20px 56px;
+  box-sizing: border-box;
+}
+
+.qna-form {
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.qna-form-field {
+  margin-bottom: 18px;
+}
+
+.qna-form-field label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--text-h);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.qna-form-field input,
+.qna-form-field textarea {
+  width: 100%;
+  padding: 11px 12px;
+  box-sizing: border-box;
+}
+
+.qna-form-field textarea {
+  min-height: 280px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.qna-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.qna-form-actions button,
+.qna-form-actions a {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text-h);
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.qna-form-actions button {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+.qna-form-actions button:hover:not(:disabled),
+.qna-form-actions a:hover {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--accent-dark);
+}
+
+.qna-form-actions button:hover:not(:disabled) {
+  background: var(--accent-dark);
+  color: #fff;
+}
+
+@media (max-width: 700px) {
+  .qna-detail-page,
+  .qna-form-page {
+    padding: 28px 16px 40px;
+  }
+
+  .qna-detail-meta {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .qna-comments,
+  .qna-form {
+    padding: 20px;
+  }
+}

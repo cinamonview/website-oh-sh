@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import './Archive.css'
 
 function ArchiveEdit() {
   const { id } = useParams()
@@ -116,7 +117,7 @@ function ArchiveEdit() {
 
   if (loading) {
     return (
-      <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
+      <div className="archive-form-page">
         <h1>자료실 게시글 수정</h1>
         <p>자료실 게시글을 불러오는 중...</p>
       </div>
@@ -125,7 +126,7 @@ function ArchiveEdit() {
 
   if (errorMessage) {
     return (
-      <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
+      <div className="archive-form-page">
         <h1>자료실 게시글 수정</h1>
         <p style={{ color: 'red' }}>{errorMessage}</p>
         <Link to="/archive">목록으로</Link>
@@ -138,10 +139,10 @@ function ArchiveEdit() {
   }
 
   return (
-    <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
-      <h1>자료실 게시글 수정</h1>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '16px' }}>
+    <div className="archive-form-page">
+      <div className="archive-form-header"><h1>자료실 게시글 수정</h1></div>
+      <form className="archive-form" onSubmit={handleSubmit}>
+        <div className="archive-form-field">
           <label htmlFor="title" style={{ display: 'block', marginBottom: '4px' }}>제목</label>
           <input
             id="title"
@@ -154,7 +155,7 @@ function ArchiveEdit() {
           />
         </div>
 
-        <div style={{ marginBottom: '16px' }}>
+        <div className="archive-form-field">
           <label htmlFor="content" style={{ display: 'block', marginBottom: '4px' }}>내용</label>
           <textarea
             id="content"
@@ -170,8 +171,8 @@ function ArchiveEdit() {
         {saving && <p>자료실 게시글을 수정하는 중...</p>}
         {errorMessage && <p style={{ color: 'red', marginBottom: '16px' }}>{errorMessage}</p>}
 
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button type="submit" disabled={saving} style={{ padding: '8px 16px', cursor: saving ? 'not-allowed' : 'pointer' }}>
+        <div className="archive-form-actions">
+          <button type="submit" disabled={saving}>
             수정
           </button>
           <Link to={`/archive/${id}`}>취소</Link>
