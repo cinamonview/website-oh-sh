@@ -176,6 +176,45 @@ public class ArchiveController {
                 .body(new FileSystemResource(savedFilePath));
     }
 
+    @GetMapping("/api/archives/files/{fileId}/preview")
+    public ResponseEntity<Resource> preview(@PathVariable Long fileId) {
+        ArchiveFile archiveFile = archiveFileService.findById(fileId).orElse(null);
+        if (archiveFile == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Path uploadDirectory = Paths.get("uploads", "archive").toAbsolutePath().normalize();
+        Path savedFilePath = uploadDirectory.resolve(archiveFile.getSavedFileName()).normalize();
+        if (!savedFilePath.startsWith(uploadDirectory)
+                || !Files.isRegularFile(savedFilePath)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        MediaType contentType = MediaType.APPLICATION_OCTET_STREAM;
+        try {
+            String detectedContentType = Files.probeContentType(savedFilePath);
+            if (detectedContentType != null) {
+                contentType = MediaType.parseMediaType(detectedContentType);
+            }
+        } catch (IOException | IllegalArgumentException exception) {
+            contentType = MediaType.APPLICATION_OCTET_STREAM;
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(contentType);
+        headers.setContentDisposition(ContentDisposition.inline().build());
+
+        try {
+            headers.setContentLength(Files.size(savedFilePath));
+        } catch (IOException exception) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(new FileSystemResource(savedFilePath));
+    }
+
     @GetMapping("/api/archives/{id}")
     public ResponseEntity<Archive> findById(
             @PathVariable Long id,

@@ -1,6 +1,33 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
+const IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'])
+const VIDEO_EXTENSIONS = new Set(['mp4', 'webm', 'ogg', 'mov', 'avi'])
+const AUDIO_EXTENSIONS = new Set(['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac'])
+
+function getAttachmentType(fileName) {
+  if (!fileName) {
+    return 'file'
+  }
+
+  const extensionIndex = fileName.lastIndexOf('.')
+  if (extensionIndex < 0) {
+    return 'file'
+  }
+
+  const extension = fileName.slice(extensionIndex + 1).toLowerCase()
+  if (IMAGE_EXTENSIONS.has(extension)) {
+    return 'image'
+  }
+  if (AUDIO_EXTENSIONS.has(extension)) {
+    return 'audio'
+  }
+  if (VIDEO_EXTENSIONS.has(extension)) {
+    return 'video'
+  }
+  return 'file'
+}
+
 function ArchiveDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -180,13 +207,42 @@ function ArchiveDetail() {
           <strong>📎 첨부파일</strong>
           {attachments.map((attachment) => (
             <div key={attachment.id} style={{ marginTop: '8px' }}>
-              <a
-                href={`http://localhost:8080/api/archives/files/${attachment.id}/download`}
-                download
-              >
-                {attachment.originalFileName}
-              </a>{' '}
-              ({attachment.fileSize} bytes)
+              {getAttachmentType(attachment.originalFileName) === 'image' && (
+                <img
+                  src={`http://localhost:8080/api/archives/files/${attachment.id}/preview`}
+                  alt={attachment.originalFileName || '첨부 이미지'}
+                  style={{ display: 'block', maxWidth: '100%' }}
+                />
+              )}
+              {getAttachmentType(attachment.originalFileName) === 'video' && (
+                <video
+                  controls
+                  preload="metadata"
+                  src={`http://localhost:8080/api/archives/files/${attachment.id}/preview`}
+                  style={{ display: 'block', maxWidth: '100%' }}
+                />
+              )}
+              {getAttachmentType(attachment.originalFileName) === 'audio' && (
+                <audio
+                  controls
+                  src={`http://localhost:8080/api/archives/files/${attachment.id}/preview`}
+                />
+              )}
+              {getAttachmentType(attachment.originalFileName) === 'file' ? (
+                <>
+                  <a
+                    href={`http://localhost:8080/api/archives/files/${attachment.id}/download`}
+                    download
+                  >
+                    {attachment.originalFileName}
+                  </a>{' '}
+                  ({attachment.fileSize} bytes)
+                </>
+              ) : (
+                <div>
+                  {attachment.originalFileName} ({attachment.fileSize} bytes)
+                </div>
+              )}
             </div>
           ))}
         </div>
